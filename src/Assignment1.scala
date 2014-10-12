@@ -28,46 +28,36 @@ object Assignemnet1 extends App {
   /**
    * + handles multiple queries simultaneously,
    */
-  //val query: Map[Int, String] = Map(51 -> "Airbus Subsidies", 52 -> "South African Sanctions", 53 -> "Leveraged Buyouts")
-    val query: Map[Int, String] = Map(51 -> "Airbus Subsidies")
-  val num = 100
+  val query: Map[Int, String] = Map(51 -> "Airbus Subsidies",
+    52 -> "South African Sanctions", 53 -> "Leveraged Buyouts", 
+    54 -> "Satellite Launch Contracts", 55-> "Insider Trading",
+    56 -> "International Finance", 57 -> "MCI",
+    58 -> "Rail Strikes", 59 -> "Weather Related Fatalities",
+    60 -> "Merit-Pay vs. Seniority")
+  
+  val numberOfResults = 100
 
   /**
    * +offers multiple relevance models (at least one term-based model
    * and one language model),
    */
 
-  val alerts = new MultipleAlertsTipster(query, num)
-
-  val sw = new StopWatch; sw.start
-  var iter = 0
-  for (doc <- tipster.stream) {
-    iter += 1
-    alerts.process(doc.name, doc.tokens)
-    if (iter % 20000 == 0) {
-      println("Iteration = " + iter)
-      alerts.results.foreach(println)
-    }
-  }
-  sw.stop
-  println("Stopped time = " + sw.stopped)
-  println("########## RESULT ##########")
+  val multipleAlertsTipster = new MultipleAlertsTipster(query, numberOfResults)
+  multipleAlertsTipster.process(tipster)
 
   /**
    * + outputs top n results per query,
    */
-  new ResultWriter("ranking-cyrill-zadra.run").write(alerts)
+  new ResultWriter("ranking-cyrill-zadra.run").write(multipleAlertsTipster)
 
   /**
    * + calculates per-query and global quality metrics (e.g., MAP)
    */
 
-  val rel = new TipsterGroundTruth(qrlesPath).judgements.get("51").get.toSet
   println("########## RELEVANCE ##########")
-  println(rel)
 
-  val ret = alerts.results.map(r => new PrecisionRecall(r.map(x => x.title), rel))
-  val retAvgPrev = alerts.results.map(r => new AveragePrecision(r.map(x => x.title), rel, num))
+  val ret = multipleAlertsTipster.alerts.map(r => new PrecisionRecall(r.results.map(x => x.title), new TipsterGroundTruth(qrlesPath).judgements.get(r.topic.toString).get.toSet))
+  val retAvgPrev = multipleAlertsTipster.alerts.map(r => new AveragePrecision(r.results.map(x => x.title), new TipsterGroundTruth(qrlesPath).judgements.get(r.topic.toString).get.toSet, numberOfResults))
 
   for (pr <- ret) {
     println("########## PrecisionRecall ###########")
