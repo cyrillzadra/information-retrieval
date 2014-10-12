@@ -6,7 +6,7 @@ class MultipleAlertsTipster(queries: Map[Int, String], numberOfResults: Int) {
 
   val alerts = queries.map(x => new TopicAlerts(x._1, x._2, numberOfResults)).toList
 
-  def process(tipster : Tipster3Stream) : Unit = {
+  def process(tipster : TipsterDirStream) : Unit = {
     val sw = new StopWatch; sw.start
     var iter = 0
     for (doc <- tipster.stream) {

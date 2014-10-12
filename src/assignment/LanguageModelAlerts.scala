@@ -10,8 +10,8 @@ class ModelAlerts (q: String, n: Int,  lambda : Double) {
   val query = new LanguageModelQuery(q, lambda)
   
   // score a document and try to add to results
-  def process(title: String, doc: List[String]) : Boolean = {
-    val score = query.score(doc)
+  def process(title: String, doc: List[String], index : FreqIndex) : Boolean = {
+    val score = query.score(doc, index)
     add(ScoredResult(title,score))
   }
   

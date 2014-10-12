@@ -13,6 +13,7 @@ abstract class InvertedIndex[Res <% Result[Res]]  {
   def results (terms: Seq[String]) : List[Res] = {
     val resultLists      = terms.map(term => results(term))
     val shortToLongLists = resultLists.sortWith( _.length < _.length) 
+    println(shortToLongLists)
     shortToLongLists.reduceLeft( (l1,l2) => InvertedIndex.sIntersect(l1,l2) )
   }
 }
