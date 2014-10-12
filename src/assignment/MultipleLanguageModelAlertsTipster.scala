@@ -2,9 +2,9 @@ package assignment
 
 import ch.ethz.dal.tinyir.util.StopWatch
 
-class MultipleAlertsTipster(queries: Map[Int, String], numberOfResults: Int) {
+class MultipleLanguageModelAlertsTipster(queries: Map[Int, String], numberOfResults: Int, lambda : Double) {
 
-  val alerts = queries.map(x => new TopicAlerts(x._1, x._2, numberOfResults)).toList
+  val alerts = queries.map(x => new TopicModelAlerts(x._1, x._2, numberOfResults, lambda)).toList
 
   def process(tipster : Tipster3Stream) : Unit = {
     val sw = new StopWatch; sw.start

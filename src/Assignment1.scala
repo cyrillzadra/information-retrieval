@@ -7,6 +7,7 @@ import ch.ethz.dal.tinyir.util.StopWatch
 import assignment.MultipleAlertsTipster
 import assignment.MeanAveragePrecision
 import assignment.AveragePrecision
+import assignment.MultipleLanguageModelAlertsTipster
 
 object Assignemnet1 extends App {
 
@@ -42,7 +43,8 @@ object Assignemnet1 extends App {
    * and one language model),
    */
 
-  val multipleAlertsTipster = new MultipleAlertsTipster(query, numberOfResults)
+  //val multipleAlertsTipster = new MultipleAlertsTipster(query, numberOfResults)
+  val multipleAlertsTipster = new MultipleLanguageModelAlertsTipster(query, numberOfResults, 0.1)
   multipleAlertsTipster.process(tipster)
 
   /**

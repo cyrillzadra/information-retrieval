@@ -5,8 +5,8 @@ import ch.ethz.dal.tinyir.alerts.Alerts
 /**
  * FIXME Refactor need topic as public member. change name from topicConstructor to topic.
  */
-class TopicAlerts(topicConstructur: Int, query: String, numberOfResults: Int)
-  extends Alerts(query, numberOfResults) {
+class TopicModelAlerts(topicConstructur: Int, query: String, numberOfResults: Int, lambda: Double)
+  extends ModelAlerts(query, numberOfResults, lambda) {
 
   val topic: Int = topicConstructur;
 
