@@ -8,6 +8,7 @@ case class FreqResult(val id: Int, val tf: List[Int]) extends Result[FreqResult]
 } 
 
 class FreqIndex (docs: Stream[Document]) extends InvertedIndex[FreqResult] {
+
   
   case class FreqPosting(val id: Int, val freq: Int) extends Ordered[FreqPosting] {
     def compare(that: FreqPosting) = this.id compare that.id
@@ -34,7 +35,7 @@ object FreqIndex {
     val stream : Stream[StringDocument] = List(d1,d0).toStream
     val idx = new FreqIndex(stream)    
     idx.index.foreach{ case (d,lst) => println(d + ": " + lst.mkString(" "))}     
-    val q = List("a","i","tell")
+    val q = List("a","i")
     println(q.mkString(" ") + " = " + idx.results(q).mkString(" "))
   }
 }

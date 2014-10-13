@@ -1,6 +1,7 @@
-package assignment
+package assignment.langmodel
 
 import ch.ethz.dal.tinyir.processing.Tokenizer
+import assignment.FreqIndex
 
 /*
  * lambda value 0.1 for title queries and 0.7 for long queries.

@@ -1,7 +1,9 @@
-package assignment
+package assignment.langmodel
 
 import scala.collection.mutable.PriorityQueue
 import scala.math.Ordering.Implicits._
+
+import assignment.FreqIndex
 
 case class ScoredResult (title : String, score: Double)
 

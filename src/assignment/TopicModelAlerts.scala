@@ -1,6 +1,7 @@
 package assignment
 
 import ch.ethz.dal.tinyir.alerts.Alerts
+import assignment.langmodel.ModelAlerts
 
 /**
  * FIXME Refactor need topic as public member. change name from topicConstructor to topic.

@@ -1,10 +1,12 @@
 package assignment
 
 import ch.ethz.dal.tinyir.util.StopWatch
+import assignment.tdidf.TdIdfAlerts
+import ch.ethz.dal.tinyir.processing.Document
 
-class MultipleAlertsTipster(queries: Map[Int, String], numberOfResults: Int) {
+class TermBasedModelAlertsTipster(queries: Map[Int, String], numberOfResults: Int, docs: Stream[Document]) {
 
-  val alerts = queries.map(x => new TopicAlerts(x._1, x._2, numberOfResults)).toList
+  val alerts = queries.map(x => new TdIdfAlerts(x._1, x._2, numberOfResults, docs)).toList
 
   def process(tipster : TipsterDirStream) : Unit = {
     val sw = new StopWatch; sw.start

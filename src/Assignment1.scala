@@ -1,14 +1,11 @@
 
-import assignment.ResultWriter
+import assignment.AveragePrecision
+import assignment.MeanAveragePrecision
+import assignment.TermBasedModelAlertsTipster
+import assignment.TipsterDirStream
+import assignment.io.ResultWriter
 import ch.ethz.dal.tinyir.lectures.PrecisionRecall
 import ch.ethz.dal.tinyir.lectures.TipsterGroundTruth
-import ch.ethz.dal.tinyir.util.StopWatch
-import assignment.MultipleAlertsTipster
-import assignment.MeanAveragePrecision
-import assignment.AveragePrecision
-import assignment.MultipleLanguageModelAlertsTipster
-import ch.ethz.dal.tinyir.indexing.SimpleIndex
-import assignment.TipsterDirStream
 
 object Assignemnet1 extends App {
 
@@ -18,9 +15,9 @@ object Assignemnet1 extends App {
    * + parses a document collection in a single-pass streaming fashion,
    */
 
-  //val zipDirPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment1/zips/";
+  val zipDirPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment1/zips/";
   //val tipster: TipsterStream = new TipsterStream(zipDirPath, ".zip");
-  val dirPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment1/zips/zips-1.2/";
+  val dirPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment1/zips/zips-1/";
   val dirPath2 = "C:/dev/projects/eth/information-retrieval/course-material/assignment1/zips/ap880315";
   val tipster: TipsterDirStream = new TipsterDirStream(dirPath, "");
 
@@ -49,7 +46,7 @@ object Assignemnet1 extends App {
   
   
   // tf-idf term-based model
-  val multipleAlertsTipster = new MultipleAlertsTipster(query, numberOfResults)
+  val multipleAlertsTipster = new TermBasedModelAlertsTipster(query, numberOfResults, tipster.stream)
   
   // language model model
   //val multipleAlertsTipster = new MultipleLanguageModelAlertsTipster(query, numberOfResults, 0.1)

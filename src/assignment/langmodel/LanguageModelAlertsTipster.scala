@@ -1,8 +1,11 @@
-package assignment
+package assignment.langmodel
 
 import ch.ethz.dal.tinyir.util.StopWatch
+import assignment.FreqIndex
+import assignment.TipsterDirStream
+import assignment.TopicModelAlerts
 
-class MultipleLanguageModelAlertsTipster(queries: Map[Int, String], numberOfResults: Int, lambda: Double) {
+class LanguageModelAlertsTipster(queries: Map[Int, String], numberOfResults: Int, lambda: Double) {
 
   val alerts = queries.map(x => new TopicModelAlerts(x._1, x._2, numberOfResults, lambda)).toList
  

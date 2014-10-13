@@ -12,5 +12,5 @@ abstract class Document {
   def date   : String
   def codes  : Set[String] = Set()   
   def content: String  
-  def tokens : List[String] = StopWords.filterNot(Tokenizer.tokenize(PorterStemmer.stem(content)).toSeq).toList
+  def tokens : List[String] = Tokenizer.tokenize(content).toList
 }
