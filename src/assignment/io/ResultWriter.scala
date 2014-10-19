@@ -15,8 +15,8 @@ class ResultWriter(fileName: String) {
 
   def write(a: TermBasedModelAlertsTipster) = {
     for (alert <- a.alerts; res <- alert.results.zipWithIndex) {
-      val docId = res._1.title.substring(0, res._1.title.length() - 4) + "-" + res._1.title.substring(res._1.title.length() - 4, res._1.title.length())
-      val out = "%s %s %s \n".format(alert.topic, res._2 + 1, docId)
+      //val docId = res._1.title.substring(0, res._1.title.length() - 4) + "-" + res._1.title.substring(res._1.title.length() - 4, res._1.title.length())
+      val out = "%s %s %s \n".format(alert.topic, res._2 + 1, res._1.title)
       writer.write(out)
     }
     writer.close()
@@ -24,8 +24,8 @@ class ResultWriter(fileName: String) {
   
     def write(a: LanguageModelAlertsTipster) = {
     for (alert <- a.alerts; res <- alert.results.zipWithIndex) {
-      val docId = res._1.title.substring(0, res._1.title.length() - 4) + "-" + res._1.title.substring(res._1.title.length() - 4, res._1.title.length())
-      val out = "%s %s %s \n".format(alert.topic, res._2 + 1, docId)
+      //val docId = res._1.title.substring(0, res._1.title.length() - 4) + "-" + res._1.title.substring(res._1.title.length() - 4, res._1.title.length())
+      val out = "%s %s %s \n".format(alert.topic, res._2 + 1, res._1.title)
       writer.write(out)
     }
     writer.close()

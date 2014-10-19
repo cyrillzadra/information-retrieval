@@ -1,7 +1,6 @@
 package ch.ethz.dal.tinyir.processing
 
 import scala.util.Try
-
 import com.github.aztek.porterstemmer.PorterStemmer
 
 abstract class Document {
@@ -12,5 +11,5 @@ abstract class Document {
   def date   : String
   def codes  : Set[String] = Set()   
   def content: String  
-  def tokens : List[String] = Tokenizer.tokenize(content).toList
+  def tokens : List[String] = StopWords.filterNot(Tokenizer.tokenize(PorterStemmer.stem(content))).toList
 }

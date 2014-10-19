@@ -39,4 +39,7 @@ object SimpleIndex {
     println(q.mkString(" ") + " = " + idx.results(q).mkString(" "))
   }
 }
+
+
+
   

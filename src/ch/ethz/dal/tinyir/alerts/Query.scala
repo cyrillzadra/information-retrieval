@@ -1,9 +1,10 @@
 package ch.ethz.dal.tinyir.alerts
 
 import ch.ethz.dal.tinyir.processing.Tokenizer
+import com.github.aztek.porterstemmer.PorterStemmer
 
 class Query (query: String) {  
-  val qterms = Tokenizer.tokenize(query).distinct
+  val qterms = Tokenizer.tokenize(PorterStemmer.stem(query)).distinct
   val length = qterms.length
 
   def score (doc: List[String]) : Double = {
