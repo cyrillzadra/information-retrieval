@@ -18,7 +18,7 @@ object Assignemnet1 extends App {
   val dirPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment1/zips/zips-1-old/";
   val dirPath3 = "C:/dev/projects/eth/information-retrieval/course-material/assignment1/zips/zips-1.2/";
   val dirPath2 = "C:/dev/projects/eth/information-retrieval/course-material/assignment1/zips/all-zips/";
-  val tipster: TipsterDirStream = new TipsterDirStream(dirPath, "");
+  val tipster: TipsterDirStream = new TipsterDirStream(dirPath3, "");
 
   val qrlesPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment1/qrels"
   val topicPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment1/topics"

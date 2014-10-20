@@ -6,6 +6,7 @@ import ch.ethz.dal.tinyir.alerts.Query
 import assignment.tdidf.TdIdfQuery
 import assignment.tdidf.TdIdfIndex
 import assignment.TestDocument
+import com.github.aztek.porterstemmer.PorterStemmer
 
 /*
  * lambda value 0.1 for title queries and 0.7 for long queries.
@@ -15,7 +16,7 @@ class LanguageModelQuery(query: String, lambda: Double) extends Query(query) {
   def score(doc: List[String], index: LangModelIndex): Double = {
     var numberOfTermsInDocument = doc.size
 
-    val tfs: Map[String, Int] = doc.groupBy(identity).mapValues(l => l.length)
+    val tfs: Map[String, Int] = doc.map(word => PorterStemmer.stem(word)).groupBy(identity).mapValues(l => l.length)
 
     val qtfs = qterms.flatMap(q => tfs.get(q)).isEmpty match {
       case true => List(0)
@@ -23,11 +24,10 @@ class LanguageModelQuery(query: String, lambda: Double) extends Query(query) {
     }
 
     println(qterms)
-    val pPqMd : Double = qtfs.map(x => x.toDouble / numberOfTermsInDocument).reduce(_ * _)
+    val pPqMd: Double = qtfs.map(x => x.toDouble / numberOfTermsInDocument).reduce(_ * _)
     val pPqMc = qterms.map(x => index.tokenFrequencies(x)).reduce(_ * _)
 
     ((1 - lambda) * pPqMc) + (lambda * pPqMd)
-    pPqMd
   }
 }
 

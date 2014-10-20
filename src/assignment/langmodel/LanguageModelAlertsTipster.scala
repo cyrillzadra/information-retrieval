@@ -9,12 +9,15 @@ class LanguageModelAlertsTipster(queries: Map[Int, String], numberOfResults: Int
 
   val idx: LangModelIndex = {
     println("init index")
+    println(queries)
     val index = new LangModelIndex(tipster.stream, queries)
+    println(queries)
+
     println("initialized index")
     index
   }
 
-  val alerts = queries.map(x => new LanguageModelAlerts(x._1, x._2, numberOfResults, lambda)).toList
+  val alerts = queries.map(x => new LanguageModelAlerts(x._1, x._2, numberOfResults, lambda, idx)).toList
 
   def process(): Unit = {
 
@@ -22,7 +25,7 @@ class LanguageModelAlertsTipster(queries: Map[Int, String], numberOfResults: Int
     var iter = 0
     for (doc <- tipster.stream) {
       iter += 1
-      process(doc.name, doc.tokens, idx)
+      process(doc.name, doc.tokens)
       if (iter % 20000 == 0) {
 
         println("Iteration = " + iter)
@@ -36,8 +39,8 @@ class LanguageModelAlertsTipster(queries: Map[Int, String], numberOfResults: Int
     new ResultWriter("ranking-l-cyrill-zadra.run").write(this)
   }
 
-  private def process(title: String, doc: List[String], index: LangModelIndex): List[Boolean] = {
-    for (alert <- alerts) yield alert.process(title, doc, index)
+  private def process(title: String, doc: List[String]): List[Boolean] = {
+    for (alert <- alerts) yield alert.process(title, doc)
   }
 
   def results = alerts.map(x => x.results)

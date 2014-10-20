@@ -14,7 +14,7 @@ class TdIdfAlerts(topicConstructur: Int, qry: String, numberOfResults: Int, inde
   override val query = new TdIdfQuery(qry, index)
 
   // score a document and try to add to results
-  def process(title: String, doc: List[String], index: TdIdfIndex): Boolean = {
+  override def process(title: String, doc: List[String]): Boolean = {
     val score = query.score(doc)
     add(ScoredResult(title, score))
   }

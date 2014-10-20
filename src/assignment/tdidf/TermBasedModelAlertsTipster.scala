@@ -24,7 +24,7 @@ class TermBasedModelAlertsTipster(queries: Map[Int, String], numberOfResults: In
     var iter = 0
     for (doc <- tipster.stream) {
       iter += 1
-      process(doc.name, doc.tokens, idx)
+      process(doc.name, doc.tokens)
       if (iter % 20000 == 0) {
         
         println("Iteration = " + iter)
@@ -38,8 +38,8 @@ class TermBasedModelAlertsTipster(queries: Map[Int, String], numberOfResults: In
     new ResultWriter("ranking-t-cyrill-zadra.run").write(this)
   }
 
-  private def process(title: String, doc: List[String], index: TdIdfIndex): List[Boolean] = {
-    for (alert <- alerts) yield alert.process(title, doc, index)
+  private def process(title: String, doc: List[String]): List[Boolean] = {
+    for (alert <- alerts) yield alert.process(title, doc)
   }
 
   def results = alerts.map(x => x.results)
