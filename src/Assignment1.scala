@@ -1,11 +1,10 @@
 
-import assignment.AveragePrecision
-import assignment.MeanAveragePrecision
-import assignment.tdidf.TermBasedModelAlertsTipster
 import assignment.TipsterDirStream
-import assignment.io.ResultWriter
-import ch.ethz.dal.tinyir.lectures.PrecisionRecall
+import assignment.langmodel.LanguageModelAlertsTipster
+import assignment.AveragePrecision
 import ch.ethz.dal.tinyir.lectures.TipsterGroundTruth
+import ch.ethz.dal.tinyir.lectures.PrecisionRecall
+import assignment.MeanAveragePrecision
 
 object Assignemnet1 extends App {
 
@@ -24,16 +23,13 @@ object Assignemnet1 extends App {
   val qrlesPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment1/qrels"
   val topicPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment1/topics"
 
-  /**
-   * + handles multiple queries simultaneously,
-   */
-  val query: Map[Int, String] = Map(51 -> "Airbus Subsidies");
-  /* val query: Map[Int, String] = Map(51 -> "Airbus Subsidies",
+  //val query: Map[Int, String] = Map(51 -> "Airbus Subsidies");
+   val query: Map[Int, String] = Map(51 -> "Airbus Subsidies",
     52 -> "South African Sanctions", 53 -> "Leveraged Buyouts",
     54 -> "Satellite Launch Contracts", 55 -> "Insider Trading",
     56 -> "International Finance", 57 -> "MCI",
     58 -> "Rail Strikes", 59 -> "Weather Related Fatalities",
-    60 -> "Merit-Pay vs. Seniority")*/
+    60 -> "Merit-Pay vs. Seniority")
 
   //  val query: Map[Int, String] = Map(91 -> "U.S. Army Acquisition of Advanced Weapons Systems",
   //    92 -> "International Military Equipment Sales", 93 -> "What Backing Does the National Rifle Association Have?",
@@ -43,24 +39,24 @@ object Assignemnet1 extends App {
   //    100 -> "Controlling the Transfer of High Technology")
 
   val numberOfResults = 100
-
-  /**
-   * +offers multiple relevance models (at least one term-based model
-   * and one language model),
-   */
+  
+  println("model...  ")
 
   // tf-idf term-based model
-  val multipleAlertsTipster = new TermBasedModelAlertsTipster(query, numberOfResults, tipster)
+  //val multipleAlertsTipster = new TermBasedModelAlertsTipster(query, numberOfResults, tipster)
 
-  // language model model
-  //val multipleAlertsTipster = new MultipleLanguageModelAlertsTipster(query, numberOfResults, 0.1)
+  //language model model
+  val multipleAlertsTipster = new LanguageModelAlertsTipster(query, numberOfResults, tipster, 0.1)
 
   multipleAlertsTipster.process()
+
 
   /**
    * + calculates per-query and global quality metrics (e.g., MAP)
    */
-
+  
+  println("calculating ... ")
+  
   val ret = multipleAlertsTipster.alerts.map(r =>
     new PrecisionRecall(r.results.map(x => x.title),
       new TipsterGroundTruth(qrlesPath).judgements.get(r.topic.toString).get.toSet))

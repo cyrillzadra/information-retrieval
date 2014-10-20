@@ -1,6 +1,6 @@
 import assignment.TipsterDirStream
-import assignment.index.DocIndex
 import ch.ethz.dal.tinyir.processing.Document
+import assignment.tdidf.TdIdfIndex
 
 object TestIndex extends App {
 
@@ -21,7 +21,7 @@ object TestIndex extends App {
     58 -> "Rail Strikes", 59 -> "Weather Related Fatalities",
     60 -> "Merit-Pay vs. Seniority")
 
-  val idx: DocIndex = new DocIndex(tipster.stream, query)
+  val idx: TdIdfIndex = new TdIdfIndex(tipster.stream, query)
 
   println(System.currentTimeMillis() - t)
 

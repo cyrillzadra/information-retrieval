@@ -1,7 +1,6 @@
 package assignment.tdidf
 
 import assignment.TipsterDirStream
-import assignment.index.DocIndex
 import assignment.io.ResultWriter
 import ch.ethz.dal.tinyir.util.StopWatch
 
@@ -10,8 +9,8 @@ import ch.ethz.dal.tinyir.util.StopWatch
  */
 class TermBasedModelAlertsTipster(queries: Map[Int, String], numberOfResults: Int, tipster: TipsterDirStream) {
 
-  val idx: DocIndex = { println("init index")
-    val index = new DocIndex(tipster.stream, queries)
+  val idx: TdIdfIndex = { println("init index")
+    val index = new TdIdfIndex(tipster.stream, queries)
     println("initialized index")
     index
   }
@@ -26,7 +25,7 @@ class TermBasedModelAlertsTipster(queries: Map[Int, String], numberOfResults: In
     for (doc <- tipster.stream) {
       iter += 1
       process(doc.name, doc.tokens, idx)
-      if (iter % 5000 == 0) {
+      if (iter % 20000 == 0) {
         
         println("Iteration = " + iter)
         results.foreach(println)
@@ -39,7 +38,7 @@ class TermBasedModelAlertsTipster(queries: Map[Int, String], numberOfResults: In
     new ResultWriter("ranking-t-cyrill-zadra.run").write(this)
   }
 
-  private def process(title: String, doc: List[String], index: DocIndex): List[Boolean] = {
+  private def process(title: String, doc: List[String], index: TdIdfIndex): List[Boolean] = {
     for (alert <- alerts) yield alert.process(title, doc, index)
   }
 

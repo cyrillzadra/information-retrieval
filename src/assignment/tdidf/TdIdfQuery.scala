@@ -3,21 +3,19 @@ package assignment.tdidf
 import ch.ethz.dal.tinyir.processing.Tokenizer
 import ch.ethz.dal.tinyir.alerts.Query
 import ch.ethz.dal.tinyir.processing.Document
-import assignment.index.DocIndex
-import assignment.index.DocIndex
 import assignment.TestDocument
 
 /**
  * tf * idf : Term Frequency * Inverse Document Frequency
  */
-class TdIdfQuery(query: String, index: DocIndex) extends Query(query) {
+class TdIdfQuery(query: String, index: TdIdfIndex) extends Query(query) {
 
   override def score(doc: List[String]): Double = {
 
     val ltf: Map[String, Double] = logtf(tf(doc))
     //val ltf: Map[String, Double] =  tf(doc)
     val df: Map[String, Double] = index.idf;
-
+    
     val filteredQterms = qterms.filter(t => df.contains(t))
     
     val tfidf = filteredQterms.map(f => ltf.getOrElse(f, 0.0) * index.idf(f))
@@ -49,7 +47,7 @@ object TdIdfQuery {
     val stream: Stream[TestDocument] = List(d3, d1, d0).toStream
 
     val query: Map[Int, String] = Map(51 -> "holmes when", 52 -> "holmes test");
-    val idx = new DocIndex(stream, query)
+    val idx = new TdIdfIndex(stream, query)
 
     val tfidf: TdIdfQuery = new TdIdfQuery("holmes when", idx)
 
