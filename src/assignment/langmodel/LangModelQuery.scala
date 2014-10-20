@@ -1,17 +1,16 @@
 package assignment.langmodel
 
 import ch.ethz.dal.tinyir.processing.Tokenizer
-import assignment.FreqIndex
 import ch.ethz.dal.tinyir.alerts.Query
 import assignment.tdidf.TdIdfQuery
 import assignment.tdidf.TdIdfIndex
-import assignment.TestDocument
 import com.github.aztek.porterstemmer.PorterStemmer
+import assignment.TestDocument
 
 /*
  * lambda value 0.1 for title queries and 0.7 for long queries.
  */
-class LanguageModelQuery(query: String, lambda: Double) extends Query(query) {
+class LangModelQuery(query: String, lambda: Double) extends Query(query) {
 
   def score(doc: List[String], index: LangModelIndex): Double = {
     var numberOfTermsInDocument = doc.size
@@ -31,7 +30,7 @@ class LanguageModelQuery(query: String, lambda: Double) extends Query(query) {
   }
 }
 
-object LanguageModelQuery {
+object LangModelQuery {
   def main(args: Array[String]) = {
 
     val d1 = new TestDocument("1", "mr sherlock holmes who was usually very late")
@@ -46,7 +45,7 @@ object LanguageModelQuery {
 
     println(idx.tokenFrequencies)
 
-    val tfidf: LanguageModelQuery = new LanguageModelQuery("holmes when", 0.1)
+    val tfidf: LangModelQuery = new LangModelQuery("holmes when", 0.1)
 
     println(tfidf.score(d1.tokens, idx))
 

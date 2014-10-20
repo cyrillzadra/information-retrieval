@@ -1,9 +1,10 @@
 package assignment.langmodel
 
+import com.github.aztek.porterstemmer.PorterStemmer
+
 import assignment.TestDocument
 import ch.ethz.dal.tinyir.processing.Document
 import ch.ethz.dal.tinyir.processing.Tokenizer
-import com.github.aztek.porterstemmer.PorterStemmer
 
 class LangModelIndex(docsStream: Stream[Document], queries: Map[Int, String]) {
 

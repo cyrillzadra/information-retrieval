@@ -7,7 +7,7 @@ import ch.ethz.dal.tinyir.util.StopWatch
 /**
  * 
  */
-class TermBasedModelAlertsTipster(queries: Map[Int, String], numberOfResults: Int, tipster: TipsterDirStream) {
+class TdIdfAlertsTipster(queries: Map[Int, String], numberOfResults: Int, tipster: TipsterDirStream) {
 
   val idx: TdIdfIndex = { println("init index")
     val index = new TdIdfIndex(tipster.stream, queries)

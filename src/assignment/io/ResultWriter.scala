@@ -2,9 +2,9 @@ package assignment.io
 
 import java.io.File
 import java.io.PrintWriter
-
-import assignment.tdidf.TermBasedModelAlertsTipster
-import assignment.langmodel.LanguageModelAlertsTipster
+import assignment.langmodel.LangModelAlertsTipster
+import assignment.tdidf.TdIdfAlertsTipster
+import assignment.tdidf.TdIdfAlertsTipster
 
 /**
  * Writes result to a given file.
@@ -13,7 +13,7 @@ class ResultWriter(fileName: String) {
 
   val writer = new PrintWriter(new File(fileName))
 
-  def write(a: TermBasedModelAlertsTipster) = {
+  def write(a: TdIdfAlertsTipster) = {
     for (alert <- a.alerts; res <- alert.results.zipWithIndex) {
       //val docId = res._1.title.substring(0, res._1.title.length() - 4) + "-" + res._1.title.substring(res._1.title.length() - 4, res._1.title.length())
       val out = "%s %s %s \n".format(alert.topic, res._2 + 1, res._1.title)
@@ -22,7 +22,7 @@ class ResultWriter(fileName: String) {
     writer.close()
   }
   
-    def write(a: LanguageModelAlertsTipster) = {
+    def write(a: LangModelAlertsTipster) = {
     for (alert <- a.alerts; res <- alert.results.zipWithIndex) {
       //val docId = res._1.title.substring(0, res._1.title.length() - 4) + "-" + res._1.title.substring(res._1.title.length() - 4, res._1.title.length())
       val out = "%s %s %s \n".format(alert.topic, res._2 + 1, res._1.title)

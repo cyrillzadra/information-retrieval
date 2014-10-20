@@ -23,14 +23,15 @@ class TdIdfIndex(docsStream: Stream[Document], queries: Map[Int, String]) {
 
   val numberOfDocuments: Double = idx._2
 
+  //clone to immutable map
   val numberOfDocmentsByTerm: Map[String, Int] = idx._1.map(kv => (kv._1, kv._2)).toMap
 
   val filteredNumberOfDocmentsByTerm: Map[String, Int] = numberOfDocmentsByTerm.filter(x => x._2 != 0)
 
   val idf: Map[String, Double] = filteredNumberOfDocmentsByTerm.mapValues(x => math.log(numberOfDocuments / x))
-  
+
   //val idf: Map[String, Double] = filteredNumberOfDocmentsByTerm.mapValues(x => log2(numberOfDocuments) - log2(x))
-  
+
   private def log2(x: Double) = math.log10(x) / math.log10(2.0)
 
 }

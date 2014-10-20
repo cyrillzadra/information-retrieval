@@ -5,7 +5,7 @@ import assignment.TipsterDirStream
 import assignment.io.ResultWriter
 import ch.ethz.dal.tinyir.util.StopWatch
 
-class LanguageModelAlertsTipster(queries: Map[Int, String], numberOfResults: Int, tipster: TipsterDirStream, lambda: Double) {
+class LangModelAlertsTipster(queries: Map[Int, String], numberOfResults: Int, tipster: TipsterDirStream, lambda: Double) {
 
   val idx: LangModelIndex = {
     println("init index")
@@ -17,7 +17,7 @@ class LanguageModelAlertsTipster(queries: Map[Int, String], numberOfResults: Int
     index
   }
 
-  val alerts = queries.map(x => new LanguageModelAlerts(x._1, x._2, numberOfResults, lambda, idx)).toList
+  val alerts = queries.map(x => new LangModelAlerts(x._1, x._2, numberOfResults, lambda, idx)).toList
 
   def process(): Unit = {
 

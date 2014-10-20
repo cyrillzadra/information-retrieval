@@ -1,10 +1,10 @@
 
-import assignment.TipsterDirStream
-import assignment.langmodel.LanguageModelAlertsTipster
 import assignment.AveragePrecision
-import ch.ethz.dal.tinyir.lectures.TipsterGroundTruth
-import ch.ethz.dal.tinyir.lectures.PrecisionRecall
 import assignment.MeanAveragePrecision
+import assignment.TipsterDirStream
+import assignment.tdidf.TdIdfAlertsTipster
+import ch.ethz.dal.tinyir.lectures.PrecisionRecall
+import ch.ethz.dal.tinyir.lectures.TipsterGroundTruth
 
 object Assignemnet1 extends App {
 
@@ -43,10 +43,10 @@ object Assignemnet1 extends App {
   println("model...  ")
 
   // tf-idf term-based model
-  //val multipleAlertsTipster = new TermBasedModelAlertsTipster(query, numberOfResults, tipster)
+  val multipleAlertsTipster = new TdIdfAlertsTipster(query, numberOfResults, tipster)
 
   //language model model
-  val multipleAlertsTipster = new LanguageModelAlertsTipster(query, numberOfResults, tipster, 0.1)
+  //val multipleAlertsTipster = new LanguageModelAlertsTipster(query, numberOfResults, tipster, 0.1)
 
   multipleAlertsTipster.process()
 

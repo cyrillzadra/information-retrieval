@@ -15,9 +15,9 @@ class TdIdfQuery(query: String, index: TdIdfIndex) extends Query(query) {
     val ltf: Map[String, Double] = logtf(tf(doc))
     //val ltf: Map[String, Double] =  tf(doc)
     val df: Map[String, Double] = index.idf;
-    
+
     val filteredQterms = qterms.filter(t => df.contains(t))
-    
+
     val tfidf = filteredQterms.map(f => ltf.getOrElse(f, 0.0) * index.idf(f))
     //println(tfidf)
     tfidf.sum
@@ -32,8 +32,10 @@ class TdIdfQuery(query: String, index: TdIdfIndex) extends Query(query) {
   /**
    * apply monotonic, sub-linear transformation
    */
+  //  def logtf(tf: Map[String, Double]): Map[String, Double] =
+  //    tf.mapValues(v => log2(v.toDouble / tf.values.sum) + 1.0)
   def logtf(tf: Map[String, Double]): Map[String, Double] =
-    tf.mapValues(v => log2(v.toDouble / tf.values.sum) + 1.0)
+    tf.mapValues(v => math.log(v) + 1.0)
 
   private def log2(x: Double) = math.log10(x) / math.log10(2.0)
 }
