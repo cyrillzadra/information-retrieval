@@ -1,11 +1,9 @@
-package assignment
+package assignment.tdidf
 
-import ch.ethz.dal.tinyir.util.StopWatch
-import assignment.tdidf.TdIdfAlerts
-import ch.ethz.dal.tinyir.processing.Document
-import assignment.index.DocIndex
+import assignment.TipsterDirStream
 import assignment.index.DocIndex
 import assignment.io.ResultWriter
+import ch.ethz.dal.tinyir.util.StopWatch
 
 /**
  * 

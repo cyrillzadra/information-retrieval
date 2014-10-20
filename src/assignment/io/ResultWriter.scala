@@ -3,7 +3,7 @@ package assignment.io
 import java.io.File
 import java.io.PrintWriter
 
-import assignment.TermBasedModelAlertsTipster
+import assignment.tdidf.TermBasedModelAlertsTipster
 import assignment.langmodel.LanguageModelAlertsTipster
 
 /**

@@ -1,7 +1,7 @@
 
 import assignment.AveragePrecision
 import assignment.MeanAveragePrecision
-import assignment.TermBasedModelAlertsTipster
+import assignment.tdidf.TermBasedModelAlertsTipster
 import assignment.TipsterDirStream
 import assignment.io.ResultWriter
 import ch.ethz.dal.tinyir.lectures.PrecisionRecall
@@ -19,7 +19,7 @@ object Assignemnet1 extends App {
   val dirPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment1/zips/zips-1-old/";
   val dirPath3 = "C:/dev/projects/eth/information-retrieval/course-material/assignment1/zips/zips-1.2/";
   val dirPath2 = "C:/dev/projects/eth/information-retrieval/course-material/assignment1/zips/all-zips/";
-  val tipster: TipsterDirStream = new TipsterDirStream(dirPath2, "");
+  val tipster: TipsterDirStream = new TipsterDirStream(dirPath, "");
 
   val qrlesPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment1/qrels"
   val topicPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment1/topics"
