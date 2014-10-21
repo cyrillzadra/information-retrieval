@@ -1,6 +1,6 @@
 package assignment.tdidf
 
-import assignment.TestDocument
+import assignment.util.TestDocument
 import ch.ethz.dal.tinyir.processing.Document
 import ch.ethz.dal.tinyir.processing.Tokenizer
 import com.github.aztek.porterstemmer.PorterStemmer

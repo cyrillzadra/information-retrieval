@@ -6,7 +6,9 @@ import scala.math.Ordering.Implicits._
 case class ScoredResult (title : String, score: Double)
 
 class Alerts (q: String, n: Int) {
-
+  
+  val topic : Int = 0
+  
   val query = new Query(q)
   
   // score a document and try to add to results

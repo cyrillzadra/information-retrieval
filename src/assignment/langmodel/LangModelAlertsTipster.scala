@@ -1,25 +1,22 @@
 package assignment.langmodel
 
-import assignment.FreqIndex
+import assignment.AbstractTipster
 import assignment.TipsterDirStream
 import assignment.io.ResultWriter
 import ch.ethz.dal.tinyir.util.StopWatch
+import ch.ethz.dal.tinyir.alerts.ScoredResult
 
-class LangModelAlertsTipster(queries: Map[Int, String], numberOfResults: Int, tipster: TipsterDirStream, lambda: Double) {
+class LangModelAlertsTipster(queries: Map[Int, String], numberOfResults: Int, tipster: TipsterDirStream, lambda: Double)
+  extends AbstractTipster {
 
   val idx: LangModelIndex = {
-    println("init index")
-    println(queries)
-    val index = new LangModelIndex(tipster.stream, queries)
-    println(queries)
-
-    println("initialized index")
-    index
+    println("Starting Language Model")
+    new LangModelIndex(tipster.stream, queries)
   }
 
-  val alerts = queries.map(x => new LangModelAlerts(x._1, x._2, numberOfResults, lambda, idx)).toList
+  override val alerts = queries.map(x => new LangModelAlerts(x._1, x._2, numberOfResults, lambda, idx)).toList
 
-  def process(): Unit = {
+  override def process(): Unit = {
 
     val sw = new StopWatch; sw.start
     var iter = 0
@@ -43,6 +40,6 @@ class LangModelAlertsTipster(queries: Map[Int, String], numberOfResults: Int, ti
     for (alert <- alerts) yield alert.process(title, doc)
   }
 
-  def results = alerts.map(x => x.results)
+  override def results : List[List[ScoredResult]] = alerts.map(x => x.results)
 
 }

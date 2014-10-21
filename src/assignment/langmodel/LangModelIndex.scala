@@ -2,7 +2,7 @@ package assignment.langmodel
 
 import com.github.aztek.porterstemmer.PorterStemmer
 
-import assignment.TestDocument
+import assignment.util.TestDocument
 import ch.ethz.dal.tinyir.processing.Document
 import ch.ethz.dal.tinyir.processing.Tokenizer
 

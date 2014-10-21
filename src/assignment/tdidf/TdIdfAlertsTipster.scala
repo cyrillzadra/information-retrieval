@@ -1,35 +1,36 @@
 package assignment.tdidf
 
+import assignment.AbstractTipster
 import assignment.TipsterDirStream
 import assignment.io.ResultWriter
 import ch.ethz.dal.tinyir.util.StopWatch
+import ch.ethz.dal.tinyir.alerts.ScoredResult
 
-/**
- * 
- */
-class TdIdfAlertsTipster(queries: Map[Int, String], numberOfResults: Int, tipster: TipsterDirStream) {
+class TdIdfAlertsTipster(queries: Map[Int, String], numberOfResults: Int, tipster: TipsterDirStream)
+  extends AbstractTipster {
 
-  val idx: TdIdfIndex = new TdIdfIndex(tipster.stream, queries)
+  val idx: TdIdfIndex = {
+    println("Starting TfIdf Model")
+    new TdIdfIndex(tipster.stream, queries)
+  }
 
-  val alerts = queries.map(x => new TdIdfAlerts(x._1, x._2, numberOfResults, idx)).toList
+  override val alerts : List[TdIdfAlerts] = queries.map(x => new TdIdfAlerts(x._1, x._2, numberOfResults, idx)).toList
 
-  def process(): Unit = {
-    println(queries)
-        
+  override def process(): Unit = {
     val sw = new StopWatch; sw.start
     var iter = 0
     for (doc <- tipster.stream) {
       iter += 1
       process(doc.name, doc.tokens)
       if (iter % 20000 == 0) {
-        
+
         println("Iteration = " + iter)
         results.foreach(println)
       }
     }
     sw.stop
-    println("Stopped time = " + sw.stopped)	
-    
+    println("Stopped time = " + sw.stopped)
+
     /* output result */
     new ResultWriter("ranking-t-cyrill-zadra.run").write(this)
   }
@@ -38,6 +39,6 @@ class TdIdfAlertsTipster(queries: Map[Int, String], numberOfResults: Int, tipste
     for (alert <- alerts) yield alert.process(title, doc)
   }
 
-  def results = alerts.map(x => x.results)
+  override def results : List[List[ScoredResult]] = alerts.map(x => x.results)
 
 }

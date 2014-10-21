@@ -5,7 +5,7 @@ import ch.ethz.dal.tinyir.alerts.Query
 import assignment.tdidf.TdIdfQuery
 import assignment.tdidf.TdIdfIndex
 import com.github.aztek.porterstemmer.PorterStemmer
-import assignment.TestDocument
+import assignment.util.TestDocument
 
 /*
  * lambda value 0.1 for title queries and 0.7 for long queries.

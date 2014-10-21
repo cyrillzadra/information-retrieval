@@ -3,7 +3,7 @@ package assignment.tdidf
 import ch.ethz.dal.tinyir.processing.Tokenizer
 import ch.ethz.dal.tinyir.alerts.Query
 import ch.ethz.dal.tinyir.processing.Document
-import assignment.TestDocument
+import assignment.util.TestDocument
 
 /**
  * tf * idf : Term Frequency * Inverse Document Frequency

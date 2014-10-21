@@ -9,7 +9,7 @@ import ch.ethz.dal.tinyir.alerts.ScoredResult
 class TdIdfAlerts(topicConstructur: Int, qry: String, numberOfResults: Int, index : TdIdfIndex)
   extends Alerts(qry, numberOfResults) {
 
-  val topic = topicConstructur: Int;
+  override val topic = topicConstructur: Int;
 
   override val query = new TdIdfQuery(qry, index)
 

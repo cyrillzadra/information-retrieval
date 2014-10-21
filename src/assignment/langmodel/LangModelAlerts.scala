@@ -9,7 +9,7 @@ import ch.ethz.dal.tinyir.alerts.ScoredResult
 class LangModelAlerts(topicConstructur: Int, q: String, numberOfResults: Int, lambda: Double, index: LangModelIndex)
   extends Alerts(q, numberOfResults) {
 
-  val topic = topicConstructur: Int;
+  override val topic = topicConstructur: Int;
 
   override val query = new LangModelQuery(q, lambda)
 
