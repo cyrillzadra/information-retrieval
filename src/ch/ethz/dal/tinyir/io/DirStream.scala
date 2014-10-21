@@ -34,9 +34,16 @@ object DirStream {
   }
   
   def main(args: Array[String]) {
-    val path = "C:/dev/projects/eth/information-retrieval/course-material/assignment1/zips/zips-1/ap880212"
-    val docs = new DirStream (path, ".xml")
+    val path = "C:/dev/projects/eth/information-retrieval/course-material/assignment1/zips/all-zips/"
+    val docs = new DirStream (path, "")
     println("Reading from directory = " + path)
     println("Number of files in directory = " + docs.length)
+    
+    var x = 0;
+    for(doc <- docs.stream) {
+      x += 1
+    }
+    println(x)
+    
  }
 }

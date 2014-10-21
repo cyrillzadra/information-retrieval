@@ -38,13 +38,9 @@ object LangModelIndex {
     val query: Map[Int, String] = Map(51 -> "holmes when", 52 -> "holmes test");
 
     val idx = new LangModelIndex(stream, query)
-
-    println(idx.qry)
-    
+    println(idx.qry)    
     println(idx.numberOfTokensInCollection)
-
-    println(idx.idx._1)
-    
+    println(idx.idx._1)    
     println(idx.tokenFrequencies )
   }
 
