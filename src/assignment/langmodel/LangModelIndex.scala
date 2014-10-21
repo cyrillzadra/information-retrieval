@@ -9,10 +9,10 @@ import ch.ethz.dal.tinyir.processing.Tokenizer
 class LangModelIndex(docsStream: Stream[Document], queries: Map[Int, String]) {
 
   //FIXME concatenate string in map and remove duplicates
-  private lazy val qry: List[String] = Tokenizer.tokenize(PorterStemmer.stem(queries.values.toList.groupBy { _.hashCode() }
+  private val qry: List[String] = Tokenizer.tokenize(PorterStemmer.stem(queries.values.toList.groupBy { _.hashCode() }
     .map { _._2.head }.mkString(" ")))
 
-  private lazy val idx: (collection.mutable.Map[String, Int], Int) = {
+  private val idx: (collection.mutable.Map[String, Int], Int) = {
     val df = collection.mutable.Map[String, Int]() ++= qry.map(t => t -> 0)
     var nrOfTokens: Int = 0;
     for (doc <- docsStream) {
@@ -22,7 +22,7 @@ class LangModelIndex(docsStream: Stream[Document], queries: Map[Int, String]) {
     (df, nrOfTokens)
   }
 
-  val numberOfTokensInCollection: Double = idx._2
+  private val numberOfTokensInCollection: Double = idx._2
   
   val tokenFrequencies : Map[String, Double] = idx._1.map(kv => (kv._1, kv._2)).toMap.mapValues(x => x / numberOfTokensInCollection)
 
