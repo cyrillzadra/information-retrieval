@@ -8,59 +8,51 @@ import ch.ethz.dal.tinyir.lectures.TipsterGroundTruth
 
 object Assignemnet1 extends App {
 
-  /**
-   * Build a complete IR system that:
-   *
-   * + parses a document collection in a single-pass streaming fashion,
-   */
+  val defaultInputPath1 = "C:/dev/projects/eth/information-retrieval/course-material/assignment1/zips/zips-1-old/";
+  val defaultInputPath2 = "C:/dev/projects/eth/information-retrieval/course-material/assignment1/zips/zips-1.2/";
+  val defaultInputPathAll = "C:/dev/projects/eth/information-retrieval/course-material/assignment1/zips/all-zips/";
 
-  //val tipster: TipsterStream = new TipsterStream(zipDirPath, ".zip");
-  val dirPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment1/zips/zips-1-old/";
-  val dirPath3 = "C:/dev/projects/eth/information-retrieval/course-material/assignment1/zips/zips-1.2/";
-  val dirPath2 = "C:/dev/projects/eth/information-retrieval/course-material/assignment1/zips/all-zips/";
-  val tipster: TipsterDirStream = new TipsterDirStream(dirPath3, "");
+  val inputPath: String = { if (args.length > 0) args(0) else defaultInputPath1 }
+  println("START")
+  println("input path = " + inputPath)
 
-  val qrlesPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment1/qrels"
-  val topicPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment1/topics"
+  val tipster: TipsterDirStream = new TipsterDirStream(inputPath, "");
 
   //val query: Map[Int, String] = Map(51 -> "Airbus Subsidies");
-   val query: Map[Int, String] = Map(51 -> "Airbus Subsidies",
-    52 -> "South African Sanctions", 53 -> "Leveraged Buyouts",
-    54 -> "Satellite Launch Contracts", 55 -> "Insider Trading",
-    56 -> "International Finance", 57 -> "MCI",
-    58 -> "Rail Strikes", 59 -> "Weather Related Fatalities",
-    60 -> "Merit-Pay vs. Seniority")
+  //  val query: Map[Int, String] = Map(51 -> "Airbus Subsidies",
+  //    52 -> "South African Sanctions", 53 -> "Leveraged Buyouts",
+  //    54 -> "Satellite Launch Contracts", 55 -> "Insider Trading",
+  //    56 -> "International Finance", 57 -> "MCI",
+  //    58 -> "Rail Strikes", 59 -> "Weather Related Fatalities",
+  //    60 -> "Merit-Pay vs. Seniority")
 
-  //  val query: Map[Int, String] = Map(91 -> "U.S. Army Acquisition of Advanced Weapons Systems",
-  //    92 -> "International Military Equipment Sales", 93 -> "What Backing Does the National Rifle Association Have?",
-  //    94 -> "Computer-aided Crime", 95 -> "Computer-aided Crime Detection",
-  //    96 -> "Computer-Aided Medical Diagnosis", 97 -> "Fiber Optics Applications",
-  //    98 -> "Fiber Optics Equipment Manufacturers", 99 -> "Iran-Contra Affair",
-  //    100 -> "Controlling the Transfer of High Technology")
+  val query: Map[Int, String] = Map(91 -> "U.S. Army Acquisition of Advanced Weapons Systems",
+    92 -> "International Military Equipment Sales", 93 -> "What Backing Does the National Rifle Association Have?",
+    94 -> "Computer-aided Crime", 95 -> "Computer-aided Crime Detection",
+    96 -> "Computer-Aided Medical Diagnosis", 97 -> "Fiber Optics Applications",
+    98 -> "Fiber Optics Equipment Manufacturers", 99 -> "Iran-Contra Affair",
+    100 -> "Controlling the Transfer of High Technology")
 
   val numberOfResults = 100
-  
-  println("model...  ")
+
+  println("Starting TfIdf Model")
 
   // tf-idf term-based model
   val multipleAlertsTipster = new TdIdfAlertsTipster(query, numberOfResults, tipster)
 
+  println("Starting Language Model")
   //language model model
   //val multipleAlertsTipster = new LanguageModelAlertsTipster(query, numberOfResults, tipster, 0.1)
 
   multipleAlertsTipster.process()
 
-
-  /**
-   * + calculates per-query and global quality metrics (e.g., MAP)
-   */
-  
   println("calculating ... ")
-  
+  val qrlesPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment1/qrels"
+
   val ret = multipleAlertsTipster.alerts.map(r =>
     new PrecisionRecall(r.results.map(x => x.title),
       new TipsterGroundTruth(qrlesPath).judgements.get(r.topic.toString).get.toSet))
-      
+
   val retAvgPrev = multipleAlertsTipster.alerts.map(r =>
     new AveragePrecision(r.results.map(x => x.title),
       new TipsterGroundTruth(qrlesPath).judgements.get(r.topic.toString).get.toSet, numberOfResults))

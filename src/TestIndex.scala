@@ -24,15 +24,4 @@ object TestIndex extends App {
   val idx: TdIdfIndex = new TdIdfIndex(tipster.stream, query)
 
   println(System.currentTimeMillis() - t)
-
-  println("numberOfDocuments" + idx.numberOfDocuments)
-  println("numberOfDocmentsByTerm " + idx.numberOfDocmentsByTerm)
-  println("filteredNumberOfDocmentsByTerm " + idx.filteredNumberOfDocmentsByTerm)
-  println("idf " + idx.idf)
-
-  println(idx.numberOfDocmentsByTerm.take(10))
-  println(idx.numberOfDocmentsByTerm.size)
-
-  println(idx.numberOfDocuments)
-
 }

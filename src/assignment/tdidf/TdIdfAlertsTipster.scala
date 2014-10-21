@@ -9,11 +9,7 @@ import ch.ethz.dal.tinyir.util.StopWatch
  */
 class TdIdfAlertsTipster(queries: Map[Int, String], numberOfResults: Int, tipster: TipsterDirStream) {
 
-  val idx: TdIdfIndex = { println("init index")
-    val index = new TdIdfIndex(tipster.stream, queries)
-    println("initialized index")
-    index
-  }
+  val idx: TdIdfIndex = new TdIdfIndex(tipster.stream, queries)
 
   val alerts = queries.map(x => new TdIdfAlerts(x._1, x._2, numberOfResults, idx)).toList
 
