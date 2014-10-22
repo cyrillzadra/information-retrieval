@@ -12,9 +12,11 @@ T C:/temp/docs/ C:/temp/qrels
 [inputPath] : path of folder which contains all documents
 [qrlesPath] : path of file with judgements
 
-How Program works
+"VM Arguments" have been set to -> -Xss400m -Xms3g -Xmx5g -XX:-UseGCOverheadLimit
 
-1) Initialize a stream by given inputPath.
+How Program works:
+
+1) Initialize a stream by given inputPath.  
 
 2) Loads pre-defined queries.
 
@@ -29,11 +31,14 @@ How Program works
   99 -> "Iran-Contra Affair"
   100 -> "Controlling the Transfer of High Technology"
 
-3) Depending on given [modelType] it runs
+3) Depending on given relevance model [modelType] it runs 3a) or 3b)
 
-3a) For "T" -> Term based model (TdIdf)
+3a) For "T" -> Term based relevance model (TdIdf)
 
-	+ Class assignment.tdidf.TdIdfAlertsTipster first creates idfModel by iterating over Stream which is done in assignment.tdidf.TdIdfIndex.
+	TdIdf: tf-idf(w,d) = ( 1 + log ( tf(w,d) ) * log ( n / df(w) )
+
+	+ Class assignment.tdidf.TdIdfAlertsTipster first creates idfModel by iterating 
+		over Stream which is done in assignment.tdidf.TdIdfIndex.
 		
 		++  document frequency 		  	: df(t) =  number of documents in the collection that contains term t.
 			
@@ -52,14 +57,18 @@ How Program works
 		
 			val idf: Map[String, Double] = filteredNumberOfDocmentsByTerm.mapValues(x => math.log(numberOfDocuments / x))
 			
-	+ After index has been initialized program iterates again over stream evaluates a score for each document.
-	
+	+ After index has been initialized program iterates again over stream evaluates a score for each document. 
+		Scoring function is in class assignment.tdidf.TdIdfQuery. It uses previously generated index for idf.
+		
+	+ All collected ScoredResults are then written to ranking-t-cyrill-zadra.run.
 
 
+3b) For "L" -> Language based relevance model
 
-3b) For "L" -> Language based model
+	Formula *** 
 
-	+
+	+ 	+ Class assignment.tdidf.TdIdfAlertsTipster first creates idfModel by iterating 
+		over Stream which is done in assignment.tdidf.TdIdfIndex.
 	+
 	+
 
