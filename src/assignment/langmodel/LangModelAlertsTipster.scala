@@ -27,8 +27,8 @@ class LangModelAlertsTipster(queries: Map[Int, String], numberOfResults: Int, ti
         process(doc.name, doc.tokens)
         if (iter % 20000 == 0) {
 
-          println("Iteration = " + iter)
-          results.foreach(println)
+          println("Iteration = " + iter + " time = " + sw.uptonow)
+          //          results.foreach(println)
         }
       }
     }

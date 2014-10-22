@@ -8,6 +8,8 @@ import com.github.aztek.porterstemmer.PorterStemmer
 import assignment.util.TestDocument
 
 /*
+ * query likelihood
+ * 
  * lambda value 0.1 for title queries and 0.7 for long queries.
  */
 class LangModelQuery(query: String, lambda: Double) extends Query(query) {

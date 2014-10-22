@@ -15,7 +15,7 @@ class TdIdfAlertsTipster(queries: Map[Int, String], numberOfResults: Int, tipste
     new TdIdfIndex(tipster, queries)
   }
 
-  override val alerts : List[TdIdfAlerts] = queries.map(x => new TdIdfAlerts(x._1, x._2, numberOfResults, idx)).toList
+  override val alerts: List[TdIdfAlerts] = queries.map(x => new TdIdfAlerts(x._1, x._2, numberOfResults, idx)).toList
 
   override def process(): Unit = {
     val sw = new StopWatch; sw.start
@@ -25,8 +25,8 @@ class TdIdfAlertsTipster(queries: Map[Int, String], numberOfResults: Int, tipste
       process(doc.name, doc.tokens)
       if (iter % 20000 == 0) {
 
-        println("Iteration = " + iter)
-        results.foreach(println)
+        println("Iteration = " + iter + " time = " + sw.uptonow)
+        //        results.foreach(println)
       }
     }
     sw.stop
@@ -40,6 +40,6 @@ class TdIdfAlertsTipster(queries: Map[Int, String], numberOfResults: Int, tipste
     for (alert <- alerts) yield alert.process(title, doc)
   }
 
-  override def results : List[List[ScoredResult]] = alerts.map(x => x.results)
+  override def results: List[List[ScoredResult]] = alerts.map(x => x.results)
 
 }
