@@ -6,6 +6,8 @@ import scala.math.Ordering.Implicits._
 case class ScoredResult (title : String, score: Double)
 
 class Alerts (q: String, n: Int) {
+   
+  val queryString = q;
   
   val topic : Int = 0
   

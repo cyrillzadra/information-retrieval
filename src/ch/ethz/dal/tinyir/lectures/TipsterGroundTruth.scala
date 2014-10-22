@@ -13,7 +13,6 @@ class TipsterGroundTruth(path:String) {
   .toArray
   .groupBy(_._1)
   .mapValues(_.map(_._2))
-
 }
 
 object TipsterGroundTruth {
@@ -21,5 +20,8 @@ object TipsterGroundTruth {
   def main (args:Array[String]){
     val t = new TipsterGroundTruth("C:/dev/projects/eth/information-retrieval/course-material/assignment1/qrels")
     t.judgements.foreach(j => println("Topic "+j._1 +": "+j._2.size+" judgements found."))
+    
+     val xt = t.judgements.getOrElse("51",  Array("0")).toSeq
+    println(  )
   }
 }

@@ -14,7 +14,7 @@ extends ParsedXMLStream(new ZipDirStream(path, "")){
 object TipsterStream  {
 
   def main(args: Array[String]) {
-    val tipster = new TipsterStream ("C:/dev/projects/eth/information-retrieval/course-material/assignment1/zips")  
+    val tipster = new TipsterStream ("C:/dev/projects/eth/information-retrieval/course-material/assignment1/zips/zip-folder/")  
     println("Number of files in zips = " + tipster.length)
     
     var length : Long = 0 
@@ -22,6 +22,9 @@ object TipsterStream  {
     for (doc <- tipster.stream.take(10000)) { 
       length += doc.content.length          
       tokens += doc.tokens.length
+      
+      println(doc.name)
+     
     }
     println("Final number of characters = " + length)
     println("Final number of tokens     = " + tokens)

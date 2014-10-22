@@ -15,7 +15,7 @@ class LangModelIndex(docsStream: MyStream, queries: Map[Int, String]) {
     .map { _._2.head }.mkString(" ")))
 
   private val idx: (collection.mutable.Map[String, Int], Int) = {
-    val df = collection.mutable.Map[String, Int]() ++= qry.map(t => t -> 0)
+    val cf = collection.mutable.Map[String, Int]().withDefaultValue(0)
     		
     val sw = new StopWatch; sw.start
     var iter = 0
@@ -26,7 +26,9 @@ class LangModelIndex(docsStream: MyStream, queries: Map[Int, String]) {
         println("Iteration = " + iter + " time = " + sw.uptonow)
       }
       if (doc.isFile) {
-        df ++= doc.tokens.distinct.filter(t => qry.contains(t)).map(t => t -> (1 + df.getOrElse(t, 0)))
+        cf ++= doc.tokens.distinct.filter(t => qry.contains(t))
+        		.groupBy(identity).map({ case (term, coll) => term -> (coll.size + cf.getOrElse(term, 0) ) } )
+        
         nrOfTokens += doc.tokens.size
       }
       
@@ -34,7 +36,7 @@ class LangModelIndex(docsStream: MyStream, queries: Map[Int, String]) {
     sw.stop
     println("Stopped time = " + sw.stopped)
     println(nrOfTokens)
-    (df, nrOfTokens)
+    (cf, nrOfTokens)
   }
 
   private val numberOfTokensInCollection: Double = idx._2
