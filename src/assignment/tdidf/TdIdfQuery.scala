@@ -10,19 +10,6 @@ import assignment.util.TestDocument
  */
 class TdIdfQuery(query: String, index: TdIdfIndex) extends Query(query) {
 
-  override def score(doc: List[String]): Double = {
-
-    val ltf: Map[String, Double] = logtf(tf(doc))
-    //val ltf: Map[String, Double] =  tf(doc)
-    val df: Map[String, Double] = index.idf;
-
-    val filteredQterms = qterms.filter(t => df.contains(t))
-
-    val tfidf = filteredQterms.map(f => ltf.getOrElse(f, 0.0) * index.idf(f))
-    //println(tfidf)
-    tfidf.sum
-  }
-
   /**
    * term frequencies
    */
@@ -32,12 +19,20 @@ class TdIdfQuery(query: String, index: TdIdfIndex) extends Query(query) {
   /**
    * apply monotonic, sub-linear transformation
    */
-  //  def logtf(tf: Map[String, Double]): Map[String, Double] =
-  //    tf.mapValues(v => log2(v.toDouble / tf.values.sum) + 1.0)
   def logtf(tf: Map[String, Double]): Map[String, Double] =
     tf.mapValues(v => math.log(v) + 1.0)
 
-  private def log2(x: Double) = math.log10(x) / math.log10(2.0)
+  override def score(doc: List[String]): Double = {
+
+    val ltf: Map[String, Double] = logtf(tf(doc))
+    val df: Map[String, Double] = index.idf;
+
+    val filteredQterms = qterms.filter(t => df.contains(t))
+
+    val tfidf = filteredQterms.map(f => ltf.getOrElse(f, 0.0) * index.idf(f))
+    tfidf.sum
+  }
+
 }
 
 object TdIdfQuery {
@@ -49,11 +44,11 @@ object TdIdfQuery {
     val stream: Stream[TestDocument] = List(d3, d1, d0).toStream
 
     val query: Map[Int, String] = Map(51 -> "holmes when", 52 -> "holmes test");
-    val idx = new TdIdfIndex(stream, query)
-
-    val tfidf: TdIdfQuery = new TdIdfQuery("holmes when", idx)
-
-    println(tfidf.score(d1.tokens))
+//    val idx = new TdIdfIndex(stream, query)
+//
+//    val tfidf: TdIdfQuery = new TdIdfQuery("holmes when", idx)
+//
+//    println(tfidf.score(d1.tokens))
 
   }
 }

@@ -18,7 +18,7 @@ class XMLDocument (is: InputStream) extends Document {
   
  def this(fname: String) = this(new BufferedInputStream(new FileInputStream(fname)))
   
-  val doc : XMLDoc = {   
+  def doc : XMLDoc = {   
     val dbFactory = DocumentBuilderFactory.newInstance
     val dBuilder  = dbFactory.newDocumentBuilder
     dBuilder.parse(is)

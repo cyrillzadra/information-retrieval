@@ -2,11 +2,13 @@ package assignment.langmodel
 
 import com.github.aztek.porterstemmer.PorterStemmer
 
+import assignment.io.MyStream
 import assignment.util.TestDocument
 import ch.ethz.dal.tinyir.processing.Document
 import ch.ethz.dal.tinyir.processing.Tokenizer
+import ch.ethz.dal.tinyir.util.StopWatch
 
-class LangModelIndex(docsStream: Stream[Document], queries: Map[Int, String]) {
+class LangModelIndex(docsStream: MyStream, queries: Map[Int, String]) {
 
   //FIXME concatenate string in map and remove duplicates
   private val qry: List[String] = Tokenizer.tokenize(PorterStemmer.stem(queries.values.toList.groupBy { _.hashCode() }
@@ -14,17 +16,30 @@ class LangModelIndex(docsStream: Stream[Document], queries: Map[Int, String]) {
 
   private val idx: (collection.mutable.Map[String, Int], Int) = {
     val df = collection.mutable.Map[String, Int]() ++= qry.map(t => t -> 0)
+    		
+    val sw = new StopWatch; sw.start
+    var iter = 0
     var nrOfTokens: Int = 0;
-    for (doc <- docsStream) {
-      df ++= doc.tokens.distinct.filter(t => qry.contains(t)).map(t => t -> (1 + df.getOrElse(t, 0)))
-      nrOfTokens += doc.tokens.size
+    for (doc <- docsStream.stream) {
+      iter += 1
+      if (iter % 20000 == 0) {
+        println("Iteration = " + iter + " time = " + sw.uptonow)
+      }
+      if (doc.isFile) {
+        df ++= doc.tokens.distinct.filter(t => qry.contains(t)).map(t => t -> (1 + df.getOrElse(t, 0)))
+        nrOfTokens += doc.tokens.size
+      }
+      
     }
+    sw.stop
+    println("Stopped time = " + sw.stopped)
+    println(nrOfTokens)
     (df, nrOfTokens)
   }
 
   private val numberOfTokensInCollection: Double = idx._2
-  
-  val tokenFrequencies : Map[String, Double] = idx._1.map(kv => (kv._1, kv._2)).toMap.mapValues(x => x / numberOfTokensInCollection)
+
+  val tokenFrequencies: Map[String, Double] = idx._1.map(kv => (kv._1, kv._2)).toMap.mapValues(x => x / numberOfTokensInCollection)
 
 }
 
@@ -37,11 +52,11 @@ object LangModelIndex {
 
     val query: Map[Int, String] = Map(51 -> "holmes when", 52 -> "holmes test");
 
-    val idx = new LangModelIndex(stream, query)
-    println(idx.qry)    
-    println(idx.numberOfTokensInCollection)
-    println(idx.idx._1)    
-    println(idx.tokenFrequencies )
+    //    val idx = new LangModelIndex(stream, query)
+    //    println(idx.qry)    
+    //    println(idx.numberOfTokensInCollection)
+    //    println(idx.idx._1)    
+    //    println(idx.tokenFrequencies )
   }
 
 }

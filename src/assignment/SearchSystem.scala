@@ -5,6 +5,7 @@ import assignment.tdidf.TdIdfAlertsTipster
 import ch.ethz.dal.tinyir.lectures.PrecisionRecall
 import ch.ethz.dal.tinyir.lectures.TipsterGroundTruth
 import assignment.langmodel.LangModelAlertsTipster
+import assignment.io.MyStream
 
 object SearchSystem extends App {
 
@@ -21,8 +22,8 @@ object SearchSystem extends App {
    *  L for language based model
    */
   val modelType: String = { if (args.length > 0) args(0) else throw new Exception("no model type defined") }
-  val inputPath: String = { if (args.length > 0) args(1) else throw new Exception("no input path") }
-  val qrlesPath: String = { if (args.length > 0) args(2) else throw new Exception("no qrles path") }
+  val inputPath: String = { if (args.length > 1) args(1) else throw new Exception("no input path") }
+  val qrlesPath: String = { if (args.length > 2) args(2) else null } //optional
 
   println("START")
   println("input path = " + inputPath)
@@ -31,12 +32,13 @@ object SearchSystem extends App {
   if (tgt != null) {
     println("qrles path = " + qrlesPath)
   } else {
-    println("jo qrles file defined")
+    println("no qrles (judgment) file defined")
   }
 
-  val tipster: TipsterDirStream = new TipsterDirStream(inputPath, "");
+  //val tipster: TipsterDirStream = new TipsterDirStream(inputPath, "");
+  val tipster: MyStream = new MyStream(inputPath);
 
-  val query: Map[Int, String] = Map(51 -> "Airbus Subsidies");
+  //val query: Map[Int, String] = Map(51 -> "Airbus Subsidies");
   //  val query: Map[Int, String] = Map(51 -> "Airbus Subsidies",
   //    52 -> "South African Sanctions", 53 -> "Leveraged Buyouts",
   //    54 -> "Satellite Launch Contracts", 55 -> "Insider Trading",
@@ -44,12 +46,12 @@ object SearchSystem extends App {
   //    58 -> "Rail Strikes", 59 -> "Weather Related Fatalities",
   //    60 -> "Merit-Pay vs. Seniority")
 
-  //  val query: Map[Int, String] = Map(91 -> "U.S. Army Acquisition of Advanced Weapons Systems",
-  //    92 -> "International Military Equipment Sales", 93 -> "What Backing Does the National Rifle Association Have?",
-  //    94 -> "Computer-aided Crime", 95 -> "Computer-aided Crime Detection",
-  //    96 -> "Computer-Aided Medical Diagnosis", 97 -> "Fiber Optics Applications",
-  //    98 -> "Fiber Optics Equipment Manufacturers", 99 -> "Iran-Contra Affair",
-  //    100 -> "Controlling the Transfer of High Technology")
+  val query: Map[Int, String] = Map(91 -> "U.S. Army Acquisition of Advanced Weapons Systems",
+    92 -> "International Military Equipment Sales", 93 -> "What Backing Does the National Rifle Association Have?",
+    94 -> "Computer-aided Crime", 95 -> "Computer-aided Crime Detection",
+    96 -> "Computer-Aided Medical Diagnosis", 97 -> "Fiber Optics Applications",
+    98 -> "Fiber Optics Equipment Manufacturers", 99 -> "Iran-Contra Affair",
+    100 -> "Controlling the Transfer of High Technology")
 
   val numberOfResults = 100
 
@@ -92,7 +94,7 @@ object SearchSystem extends App {
     println(new MeanAveragePrecision(retAvgPrev, query.size).meanAvgPrecision)
 
   } else {
-	  
+
   }
 
 }

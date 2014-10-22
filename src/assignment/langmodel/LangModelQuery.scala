@@ -39,13 +39,13 @@ object LangModelQuery {
     val stream: Stream[TestDocument] = List(d3, d1, d0).toStream
 
     val query: Map[Int, String] = Map(51 -> "holmes when", 52 -> "holmes test");
-    val idx = new LangModelIndex(stream, query)
-
-    println(idx.tokenFrequencies)
-
-    val tfidf: LangModelQuery = new LangModelQuery("holmes when", 0.1)
-
-    println(tfidf.score(d1.tokens, idx))
+//    val idx = new LangModelIndex(stream, query)
+//
+//    println(idx.tokenFrequencies)
+//
+//    val tfidf: LangModelQuery = new LangModelQuery("holmes when", 0.1)
+//
+//    println(tfidf.score(d1.tokens, idx))
 
   }
 }

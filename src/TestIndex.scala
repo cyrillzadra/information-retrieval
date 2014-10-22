@@ -1,14 +1,15 @@
-import assignment.TipsterDirStream
-import ch.ethz.dal.tinyir.processing.Document
+import assignment.io.MyStream
 import assignment.tdidf.TdIdfIndex
+import ch.ethz.dal.tinyir.io.ZipDirStream
+import assignment.TipsterDirStream
 
 object TestIndex extends App {
 
   //val dirPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment1/zips/zips-1.2/";
-  val dirPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment1/zips/zips-1-old/";
-  //val dirPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment1/zips/all-zips/";
+  //val dirPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment1/zips/zips-1-old/";
+  val dirPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment1/zips/all-zips/";
 
-  val tipster: TipsterDirStream = new TipsterDirStream(dirPath, "");
+  val tipster: MyStream = new MyStream(dirPath);
 
   val t = System.currentTimeMillis()
 
@@ -21,7 +22,7 @@ object TestIndex extends App {
     58 -> "Rail Strikes", 59 -> "Weather Related Fatalities",
     60 -> "Merit-Pay vs. Seniority")
 
-  val idx: TdIdfIndex = new TdIdfIndex(tipster.stream, query)
+  val idx: TdIdfIndex = new TdIdfIndex(tipster, query)
 
   println(System.currentTimeMillis() - t)
 }

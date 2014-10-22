@@ -5,13 +5,14 @@ import assignment.TipsterDirStream
 import assignment.io.ResultWriter
 import ch.ethz.dal.tinyir.util.StopWatch
 import ch.ethz.dal.tinyir.alerts.ScoredResult
+import assignment.io.MyStream
 
-class LangModelAlertsTipster(queries: Map[Int, String], numberOfResults: Int, tipster: TipsterDirStream, lambda: Double)
+class LangModelAlertsTipster(queries: Map[Int, String], numberOfResults: Int, tipster: MyStream, lambda: Double)
   extends AbstractTipster {
 
   val idx: LangModelIndex = {
     println("Starting Language Model")
-    new LangModelIndex(tipster.stream, queries)
+    new LangModelIndex(tipster, queries)
   }
 
   override val alerts = queries.map(x => new LangModelAlerts(x._1, x._2, numberOfResults, lambda, idx)).toList
@@ -21,12 +22,14 @@ class LangModelAlertsTipster(queries: Map[Int, String], numberOfResults: Int, ti
     val sw = new StopWatch; sw.start
     var iter = 0
     for (doc <- tipster.stream) {
-      iter += 1
-      process(doc.name, doc.tokens)
-      if (iter % 20000 == 0) {
+      if (doc.isFile) {
+        iter += 1
+        process(doc.name, doc.tokens)
+        if (iter % 20000 == 0) {
 
-        println("Iteration = " + iter)
-        results.foreach(println)
+          println("Iteration = " + iter)
+          results.foreach(println)
+        }
       }
     }
     sw.stop
@@ -40,6 +43,6 @@ class LangModelAlertsTipster(queries: Map[Int, String], numberOfResults: Int, ti
     for (alert <- alerts) yield alert.process(title, doc)
   }
 
-  override def results : List[List[ScoredResult]] = alerts.map(x => x.results)
+  override def results: List[List[ScoredResult]] = alerts.map(x => x.results)
 
 }

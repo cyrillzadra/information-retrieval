@@ -5,13 +5,14 @@ import assignment.TipsterDirStream
 import assignment.io.ResultWriter
 import ch.ethz.dal.tinyir.util.StopWatch
 import ch.ethz.dal.tinyir.alerts.ScoredResult
+import assignment.io.MyStream
 
-class TdIdfAlertsTipster(queries: Map[Int, String], numberOfResults: Int, tipster: TipsterDirStream)
+class TdIdfAlertsTipster(queries: Map[Int, String], numberOfResults: Int, tipster: MyStream)
   extends AbstractTipster {
 
   val idx: TdIdfIndex = {
     println("Starting TfIdf Model")
-    new TdIdfIndex(tipster.stream, queries)
+    new TdIdfIndex(tipster, queries)
   }
 
   override val alerts : List[TdIdfAlerts] = queries.map(x => new TdIdfAlerts(x._1, x._2, numberOfResults, idx)).toList
