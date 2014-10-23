@@ -26,11 +26,16 @@ class TdIdfQuery(query: String, index: TdIdfIndex) extends Query(query) {
 
     val ltf: Map[String, Double] = logtf(tf(doc))
     val df: Map[String, Double] = index.idf;
-
+    
+    val qtfs = qterms.flatMap(q => ltf.get(q))
+    val queryLen = qterms.length.toDouble
+    val docLen = ltf.values.map(x => x * x).sum.toDouble // Euclidian norm
+    val termOverlap = qtfs.sum.toDouble / (docLen * queryLen)
+    
     val filteredQterms = qterms.filter(t => df.contains(t))
 
     val tfidf = filteredQterms.map(f => ltf.getOrElse(f, 0.0) * index.idf(f))
-    tfidf.sum
+    tfidf.sum + termOverlap
   }
 
 }
