@@ -1,15 +1,17 @@
 information-retrieval (assignment2)
 =====================
 
+TODO one-vs-all or Multiclass classifier
+
 # Naive Bayse
 
-Class naivebayse.NaiveBayseClassification
+Class assignment2.naivebayse.NaiveBayseClassification
 
 # Logistic Regression
 
-Class logisticregression.LogisticClassification
+Class assignment2.regression.LogisticRegressionClassification
 
 # SVM
 
-Class svm.SupportVectorMachines
+Class assignment2.svm.SvmClassification
 
