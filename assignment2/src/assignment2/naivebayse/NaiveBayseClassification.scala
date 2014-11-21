@@ -4,13 +4,7 @@ import ch.ethz.dal.classifier.processing.ReutersCorpusIterator
 import com.github.aztek.porterstemmer.PorterStemmer
 import ch.ethz.dal.classifier.processing.Tokenizer
 import assignment2.StopWords
-
-case class FreqResult(val category: String, val tf: Int) {
-  override def equals(obj: Any): Boolean = obj match {
-    case myCase: FreqResult => category.equals(myCase.category)
-    case _ => false
-  }
-}
+import assignment2.index.IndexBuilder
 
 /**
  * Build a document classification system that:
@@ -27,66 +21,49 @@ object NaiveBayseClassification extends App {
   val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train_small/";
 
   val trainDataIter: ReutersCorpusIterator = new ReutersCorpusIterator(trainDataPath)
-  val testDataLabeledIter: ReutersCorpusIterator = new ReutersCorpusIterator(trainDataPath)
+  val testDataLabeledIter: ReutersCorpusIterator = new ReutersCorpusIterator(testDataLabeledPath)
 
-  //k = category
-  val topicCounts = scala.collection.mutable.Map[String, Int]()
-  var count = 0;
-  var length = 0;
-  //k = word  
-  val index = scala.collection.mutable.Map[String, List[FreqResult]]()
-  //k = category
-  val index2 = scala.collection.mutable.Map[String, List[Int]]()
-  while (trainDataIter.hasNext) {
-    val doc = trainDataIter.next
-    topicCounts ++= doc.topics.map(c => (c -> (1 + topicCounts.getOrElse(c, 0))))
+  val idx : IndexBuilder = new IndexBuilder(trainDataIter)
 
-    length += doc.tokens.length;
-    index2 ++= doc.topics.map(c => (c -> (List(doc.tokens.length) ++ index2.getOrElse(c, List[Int]()))))
-
-    val s: Map[String, List[FreqResult]] = doc.tokens.groupBy(identity).map(x => x._1 ->
-      doc.topics.map(t => new FreqResult(t, x._2.length)).toList)
-
-    index ++= s.map(c => (c._1 -> (c._2 ++ index.getOrElse[List[FreqResult]](c._1, List()))))
-    count += 1
-
-    if (count % 10000 == 0) {
-      index ++= index.mapValues(v => v.groupBy(identity).mapValues(x => x.reduce((a, b) =>
-        FreqResult(a.category, a.tf + b.tf))).values.toList)
-      println(index.size)
-      println(count.toDouble / 200000 * 100 + " % ")
-    }
-
-  }
-
-  println(index.take(20))
+  println(idx.index.take(20))
   
-  for ((t, c) <- topicCounts)
+  for ((t, c) <- idx.topicCounts)
     println(t + ": " + c + " documents")
 
-  println(count + " docs in corpus")
+  println(idx.nrOfDocuments  + " docs in corpus")
 
   def p(c: String): Double = {
-    val p = topicCounts(c).toDouble / count.toDouble
+    val p = idx.topicCounts(c).toDouble / idx.nrOfDocuments.toDouble
     println(p)
     p
   }
 
-  def pwc(word: String, c: String): Double = {
+  //TODO numberOfWords .. should be distinct?
+  def pwc(word: String, topic: String, numberOfWords : Int): Double = {   
+    //la place smoothing
+    val alpha = 1.0
     var x = 0.0;
-    if(index.contains(word)) 
-      x = index(word).filter(p => p.category.equals(c)).map(x => x.tf).sum.toDouble / index2(c).sum.toDouble
-    else
+    if(idx.index.contains(word)) {
+      println("word => "  + word)
+      println("topic => " + topic)
+      println("topic len(d) => " +  idx.index2(topic).sum.toDouble)
+      println("word index => " + idx.index(word))
+      println("word filtered  index => " + idx.index(word).filter(p => p.category.equals(topic)))
+      x = idx.index(word).map(x => x.tf.toDouble + alpha).sum.toDouble / idx.index2(topic).map(len => len.toDouble + alpha * numberOfWords.toDouble).sum.toDouble
+    } else {
       x = 0.toDouble
-      
+    }  
     println(x)
     x
   }
 
   def naiveBayse(tokens: List[String], topics: List[String]): List[(String,Double)] = {
-    val x = topics.map(token =>      
-      token -> (math.log(p(token)) + tokens.groupBy(identity).map( t => t._2.size.toDouble * math.log(pwc(t._1, token))).sum.toDouble)  
-    )
+    val x = topics.map{ topic =>
+      println(topic)
+      println ( math.log(p(topic)) + " " + tokens.groupBy(identity).map( t => t._2.size.toDouble 
+          * math.log(pwc(t._1, topic, tokens.size))).sum.toDouble )
+      topic -> (math.log(p(topic)) + tokens.groupBy(identity).map( word => word._2.size.toDouble * math.log(pwc(word._1, topic, tokens.size))).sum.toDouble)  
+    }
     x
   }
   
@@ -95,9 +72,8 @@ object NaiveBayseClassification extends App {
     r.maxBy(_._2)._1		
   }  
 
-  val doc = StopWords.filterNot(Tokenizer.tokenize(PorterStemmer.stem("this is just some reuter test text document and computer"))).toList
-
-  val result = naiveBayse(doc, topicCounts.keySet.toList);
+  val doc = StopWords.filterNot(Tokenizer.tokenize(PorterStemmer.stem("reuter"))).toList
+  val result = naiveBayse(doc, idx.topicCounts.keySet.toList);
   
   println(result)  
   println(maxArg(result))
