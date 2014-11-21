@@ -12,9 +12,9 @@ import assignment.util.TestDocument
  * 
  * lambda value 0.1 for title queries and 0.7 for long queries.
  */
-class LangModelQuery(query: String, lambda: Double) extends Query(query) {
+class LangModelQuery(query: String, lambda: Double, index: LangModelIndex) extends Query(query) {
 
-  def score(doc: List[String], index: LangModelIndex): Double = {
+  override def score(doc: List[String]): Double = {
     var numberOfTermsInDocument = doc.size
 
     val tfs: Map[String, Int] = doc.map(word => PorterStemmer.stem(word)).groupBy(identity).mapValues(l => l.length)

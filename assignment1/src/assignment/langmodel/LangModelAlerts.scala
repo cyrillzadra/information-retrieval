@@ -11,7 +11,7 @@ class LangModelAlerts(topicConstructur: Int, q: String, numberOfResults: Int, la
 
   override val topic = topicConstructur: Int;
 
-  override val query = new LangModelQuery(q, lambda)
+  override val query = new LangModelQuery(q, lambda, index: LangModelIndex)
 
   // score a document and try to add to results
   override def process(title: String, doc: List[String]): Boolean = {
