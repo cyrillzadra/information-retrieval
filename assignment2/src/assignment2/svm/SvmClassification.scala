@@ -23,14 +23,10 @@ object SvmClassification extends App {
   val words = scala.collection.mutable.Set[String]()
   while (trainDataIter.hasNext) {
     val doc = trainDataIter.next
-
     val tf = doc.tokens.groupBy(identity).mapValues(l => l.length)
-
     docs += (doc.name -> tf.toList)
     words ++= tf.map(c => c._1)
-
     topics += (doc.name -> doc.topics.toList)
-
   }
 
   println("docs size = " + docs.size + " ::: " + docs.take(10))

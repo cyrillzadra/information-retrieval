@@ -20,7 +20,7 @@ import ch.ethz.dal.tinyir.util.StopWatch
  */
 object NaiveBayseClassification extends App {
 
-  val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train/";
+  val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train-small/";
   val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels-small/";
 
   val trainDataIter: ReutersCorpusIterator = new ReutersCorpusIterator(trainDataPath)
@@ -32,11 +32,10 @@ object NaiveBayseClassification extends App {
   println(idx.nrOfDocuments + " docs in corpus")
 
   println(idx.index2.take(2))
-
   println(idx.index.size)
   println(idx.index2.size)
   
-  println("Start training")
+  println("Start labeled test data")
   val sw = new StopWatch; sw.start
 
   val resultScore = scala.collection.mutable.Map[String, PrecisionRecallF1[String]]()
@@ -51,23 +50,52 @@ object NaiveBayseClassification extends App {
     if (progress % 100 == 0) {
       println("progress = " + progress.toDouble / 50000 * 100 + " % " + " time = " + sw.uptonow)
     }
-
   }
   sw.stop
   println("Stopped time = " + sw.stopped)
-
   println("Start writing result")
-
   new ResultWriter("classify-cyrill-zadra-l-nb.run", resultScore).write()
+  
+  
+  println("Start unlabeled test data")
+  
 
   println("Finished")
 
   private def naiveBayse(tokens: List[String], topics: List[String]): List[(String, Double)] = {
     val x = topics.map { topic =>
-      topic -> (idx.pcIndex(topic) + tokens.groupBy(identity).map(word =>
+      topic -> (math.log(p(topic)) + tokens.groupBy(identity).map(word =>
         word._2.size.toDouble * math.log(pwc(word._1, topic, tokens.size))).sum.toDouble)
     }
     x
+  }
+
+  private def pwc(word: String, topic: String, numberOfWords: Int): Double = {
+    //la place smoothing
+    val alpha = 1.0
+    var pwc = 0.0;
+    if (idx.index.contains(word)) {
+    //  println(topic)
+    //  println(idx.index(word))
+      pwc = idx.index(word).map(x => 
+        x.tf.toDouble + alpha).sum.toDouble / (idx.numberOfTokensPerTopic2(topic) + alpha * numberOfWords).toDouble
+    } else {
+      pwc = 0.toDouble
+    }
+    //println(pwc)
+    pwc
+  }
+
+  //TODO numberOfWords .. should it be distinct?
+  private def pwc2(word: String, topic: String, numberOfWords: Int): Double = {
+    //la place smoothing
+    //    val alpha = 1.0
+    try {
+      val x = idx.index2(word)(topic).toDouble / idx.numberOfTokensPerTopic2(topic).toDouble
+      x
+    } catch {
+      case t: NoSuchElementException => 0.0
+    }
   }
 
   def p(c: String): Double = {
@@ -84,32 +112,8 @@ object NaiveBayseClassification extends App {
   private def sortByProbability(r: List[(String, Double)]): Seq[String] = {
     //return max probability
     r.sortBy(_._2).map(f => f._1).toSeq.take(5)
-  }
 
-  //TODO numberOfWords .. should it be distinct?
-  private def pwc(word: String, topic: String, numberOfWords: Int): Double = {
-    //la place smoothing
-    //    val alpha = 1.0
-    try {
-      val x = idx.index2(word)(topic).toDouble / idx.numberOfTokensPerTopic2(topic).toDouble
-      x
-    } catch {
-      case t: NoSuchElementException => 0.0
-    }    
   }
-  
-  private def pwc2(word: String, topic: String, numberOfWords: Int): Double = {
-    //la place smoothing
-    //    val alpha = 1.0
-    var pwc = 0.0;
-    if (idx.index.contains(word)) {
-      pwc = idx.index(word).filter(f => f.topic == topic).map(x => x.tf.toDouble).sum.toDouble / idx.numberOfTokensPerTopic2(topic).toDouble
-    } else {
-      pwc = 0.toDouble
-    }
-    pwc
-  }
-
   /*
    *   //TODO numberOfWords .. should it be distinct?
   private def pwc(word: String, topic: String, numberOfWords: Int): Double = {
