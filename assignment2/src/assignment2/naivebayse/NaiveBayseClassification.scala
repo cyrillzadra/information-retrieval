@@ -35,33 +35,34 @@ object NaiveBayseClassification extends App {
 
   var progress: Int = 0
 
-  val resultScore = testFeatures.map {
+  val resultScore = testFeatures.par.map {
     x =>
       val f = idx.features(x._1);
       val result = naiveBayse(f, idx.labelCounts.keySet.toList);
       val sortedResult = sortByProbability(result)
-      
+
       progress += 1
       if (progress % 100 == 0) {
         println("progress = " + progress.toDouble / 50000 * 100 + " % " + " time = " + sw.uptonow)
-      }     
-      
-      (x._1 , new PrecisionRecallF1(sortedResult, idx.testDocLabels(x._1).toSet))
+      }
+
+      (x._1, new PrecisionRecallF1(sortedResult, idx.testDocLabels(x._1).toSet))
   }
 
   sw.stop
   println("Stopped time = " + sw.stopped)
   println("Start writing result")
-  new ResultWriter("classify-cyrill-zadra-l-nb.run", resultScore.toMap).write()
+  new ResultWriter("classify-cyrill-zadra-l-nb.run", resultScore.toList.toMap).write()
 
   println("Start unlabeled test data")
   //TODO
   println("Finished")
 
   private def naiveBayse(doc: SparseVector[Double], topics: List[String]): List[(String, Double)] = {
-    val x = topics.par.map { topic =>
+    //use par collection
+    val x = topics.map { topic =>
       val features: Map[String, SparseVector[Double]] =
-        idx.trainLabelDocs(topic).map(doc => (doc -> idx.features(doc))).toMap
+        idx.trainLabelDocs(topic).par.map(doc => (doc -> idx.features(doc))).toList.toMap
 
       topic -> (math.log(p(topic)) +
         doc.mapActivePairs((k, v) => v * math.log(pwc(k, features, topic, doc.sum.toInt))).sum.toDouble)
@@ -71,15 +72,13 @@ object NaiveBayseClassification extends App {
 
   private def pwc(wordIndex: Int, features: Map[String, SparseVector[Double]],
                   topic: String, numberOfWords: Int): Double = {
-
     //la place smoothing
     val alpha = 1.0
-    var x = 0.0;
-    var y = 0.0;
-    features.map {
-      f =>
-        x += f._2(wordIndex) + alpha
-        y += idx.docLength(f._1) + alpha * numberOfWords.toDouble
+    var x = 0.0
+    var y = 0.0
+    features.map{f => 
+      x += (f._2(wordIndex) + alpha)
+      y += (idx.docLength(f._1) + alpha * numberOfWords.toDouble)
     }
     (x / y)
   }
