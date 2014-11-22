@@ -25,33 +25,33 @@ object NaiveBayseClassification extends App {
   val trainDataIter: ReutersCorpusIterator = new ReutersCorpusIterator(trainDataPath)
   val testDataLabeledIter: ReutersCorpusIterator = new ReutersCorpusIterator(testDataLabeledPath)
 
+  println("Start building index")
   val idx: IndexBuilder = new IndexBuilder(trainDataIter)
 
-  println(idx.index.take(20))
-
-  for ((t, c) <- idx.topicCounts)
-    println(t + ": " + c + " documents")
-
   println(idx.nrOfDocuments + " docs in corpus") 
-//  println(idx.numberOfTokensPerTopic.take(10))
-
+  
+  println("Start training")
+  
   val resultScore = scala.collection.mutable.Map[String, PrecisionRecallF1[String]]()
   var progress: Int = 0
   while (testDataLabeledIter.hasNext) {
     progress += 1;
     val doc = testDataLabeledIter.next
     val result = naiveBayse(doc.tokens, idx.topicCounts.keySet.toList);
-
-    resultScore += doc.name -> new PrecisionRecallF1(result.map(f => f._1).toSeq, doc.topics)
+    val sortedResult = sortByProbability(result)
+    resultScore += doc.name -> new PrecisionRecallF1(sortedResult, doc.topics)
 
     if (progress % 1000 == 0) {
-      println(progress.toDouble)
-      println(progress.toDouble / 50000 * 100 + " % ")
+      println("progress = " + progress.toDouble / 50000 * 100 + " % ")
     }
 
   }
+  
+  println("Start writing result")
 
   new ResultWriter("classify-cyrill-zadra-l-nb.run", resultScore).write()
+  
+  println("Finished")
 
   private def naiveBayse(tokens: List[String], topics: List[String]): List[(String, Double)] = {
     val x = topics.map { topic =>
@@ -68,11 +68,11 @@ object NaiveBayseClassification extends App {
     //return max probability
     r.maxBy(_._2)._1
   }
-
-  def p(c: String): Double = {
-    val p = idx.topicCounts(c).toDouble / idx.nrOfDocuments.toDouble
-    //println(p)
-    p
+  
+  //TODO how many 
+  private def sortByProbability(r: List[(String, Double)]): Seq[String] = {
+    //return max probability
+    r.sortBy(_._2).map(f => f._1).toSeq.take(5)
   }
 
   //TODO numberOfWords .. should it be distinct?
