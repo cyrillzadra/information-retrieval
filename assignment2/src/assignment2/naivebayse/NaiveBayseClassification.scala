@@ -1,12 +1,11 @@
 package assignment2.naivebayse
 
-import ch.ethz.dal.classifier.processing.ReutersCorpusIterator
-import com.github.aztek.porterstemmer.PorterStemmer
-import ch.ethz.dal.classifier.processing.Tokenizer
-import assignment2.StopWords
+import assignment.io.ResultWriter
+import assignment2.index.FeatureBuilder
 import assignment2.index.IndexBuilder
 import assignment2.score.PrecisionRecallF1
-import assignment.io.ResultWriter
+import breeze.linalg.SparseVector
+import ch.ethz.dal.classifier.processing.ReutersCorpusIterator
 import ch.ethz.dal.tinyir.util.StopWatch
 
 /**
@@ -27,108 +26,94 @@ object NaiveBayseClassification extends App {
   val testDataLabeledIter: ReutersCorpusIterator = new ReutersCorpusIterator(testDataLabeledPath)
 
   println("Start building index")
-  val idx: IndexBuilder = new IndexBuilder(trainDataIter)
+  val idx: FeatureBuilder = new FeatureBuilder(trainDataIter)
 
-  println(idx.nrOfDocuments + " docs in corpus")
-
-  println(idx.index2.take(2))
-  println(idx.index.size)
-  println(idx.index2.size)
-  
   println("Start labeled test data")
   val sw = new StopWatch; sw.start
 
-  val resultScore = scala.collection.mutable.Map[String, PrecisionRecallF1[String]]()
-  var progress: Int = 0
-  while (testDataLabeledIter.hasNext) {
-    progress += 1;
-    val doc = testDataLabeledIter.next
-    val result = naiveBayse(doc.tokens, idx.topicCounts.keySet.toList);
-    val sortedResult = sortByProbability(result)
-    resultScore += doc.name -> new PrecisionRecallF1(sortedResult, doc.topics)
+  val idxTest: FeatureBuilder = new FeatureBuilder(testDataLabeledIter)
 
-    if (progress % 100 == 0) {
-      println("progress = " + progress.toDouble / 50000 * 100 + " % " + " time = " + sw.uptonow)
-    }
+  val testFeatures = idxTest.features;
+
+  var progress: Int = 0
+  val resultScore = scala.collection.mutable.Map[String, PrecisionRecallF1[String]]()
+  testFeatures.foreach {
+    x =>
+      val f = x._2;
+      val result = naiveBayse(x._2, idx.labelCounts.keySet.toList);
+      val sortedResult = sortByProbability(result)
+      resultScore += x._1 -> new PrecisionRecallF1(sortedResult, idxTest.labels(x._1).toSet)
+
+      progress += 1
+
+      if (progress % 100 == 0) {
+        println("progress = " + progress.toDouble / 50000 * 100 + " % " + " time = " + sw.uptonow)
+      }
   }
+
   sw.stop
   println("Stopped time = " + sw.stopped)
   println("Start writing result")
   new ResultWriter("classify-cyrill-zadra-l-nb.run", resultScore).write()
-  
-  
-  println("Start unlabeled test data")
-  
 
+  println("Start unlabeled test data")
+  //TODO
   println("Finished")
 
-  private def naiveBayse(tokens: List[String], topics: List[String]): List[(String, Double)] = {
+  private def naiveBayse(doc: SparseVector[Double], topics: List[String]): List[(String, Double)] = {
     val x = topics.map { topic =>
-      topic -> (math.log(p(topic)) + tokens.groupBy(identity).map(word =>
-        word._2.size.toDouble * math.log(pwc(word._1, topic, tokens.size))).sum.toDouble)
+      val features: Map[String, SparseVector[Double]] =
+        idx.labelDocs(topic).map(doc => (doc -> idx.features(doc))).toMap
+
+      topic -> (math.log(p(topic)) +
+        doc.mapActivePairs((k, v) => v * math.log(pwc(k, features, topic, doc.sum.toInt))).sum.toDouble)
     }
     x
   }
 
-  private def pwc(word: String, topic: String, numberOfWords: Int): Double = {
+  private def pwc(wordIndex: Int, features: Map[String, SparseVector[Double]],
+                  topic: String, numberOfWords: Int): Double = {
+
     //la place smoothing
     val alpha = 1.0
-    var pwc = 0.0;
-    if (idx.index.contains(word)) {
-    //  println(topic)
-    //  println(idx.index(word))
-      pwc = idx.index(word).map(x => 
-        x.tf.toDouble + alpha).sum.toDouble / (idx.numberOfTokensPerTopic2(topic) + alpha * numberOfWords).toDouble
-    } else {
-      pwc = 0.toDouble
-    }
-    //println(pwc)
-    pwc
-  }
+    var x = 0.0;
+    var y = 0.0;
+    val word : String = idxTest.wordIndex(wordIndex)
+    features.map {
+      f =>
+        val index: Int = {
+          if (idx.words.contains(word))
+            idx.words(word)
+          else
+            0
+        }
 
-  //TODO numberOfWords .. should it be distinct?
-  private def pwc2(word: String, topic: String, numberOfWords: Int): Double = {
-    //la place smoothing
-    //    val alpha = 1.0
-    try {
-      val x = idx.index2(word)(topic).toDouble / idx.numberOfTokensPerTopic2(topic).toDouble
-      x
-    } catch {
-      case t: NoSuchElementException => 0.0
+        x += f._2(index) + alpha
+
+        y += idx.docLength(f._1) + alpha * numberOfWords.toDouble
     }
+    (x / y)
   }
 
   def p(c: String): Double = {
-    val p = idx.topicCounts(c).toDouble / idx.nrOfDocuments.toDouble
+    val p = idx.labelCounts(c).toDouble / idx.features.size.toDouble
     p
   }
 
+  /**
+   * return max 5 probability
+   *
+   */
   private def maxArg(r: List[(String, Double)]): String = {
-    //return max probability
     r.maxBy(_._2)._1
   }
 
-  //TODO how many 
+  /**
+   * sorty by probablity
+   */
   private def sortByProbability(r: List[(String, Double)]): Seq[String] = {
-    //return max probability
     r.sortBy(_._2).map(f => f._1).toSeq.take(5)
 
   }
-  /*
-   *   //TODO numberOfWords .. should it be distinct?
-  private def pwc(word: String, topic: String, numberOfWords: Int): Double = {
-    //la place smoothing
-    //    val alpha = 1.0
-    val t : Any = idx.index2.getOrElse(word, 0);
-    
-    def matchTest(t: Any): Double = t match {
-      case 0.0 => 0.0
-      case y: scala.collection.Map[String,Int] => 
-        y.getOrElse(topic, 0).toDouble / idx.numberOfTokensPerTopic2(topic).toDouble
-    }
-
-    matchTest(t) 
-  }
-   */
 
 }
