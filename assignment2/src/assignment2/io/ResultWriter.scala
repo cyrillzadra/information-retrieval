@@ -8,7 +8,7 @@ import assignment2.score.PrecisionRecallF1
 /**
  * Writes result to a given file.
  */
-class ResultWriter(fileName: String, result: scala.collection.mutable.Map[String, PrecisionRecallF1[String]], labeled : Boolean = true) {
+class ResultWriter(fileName: String, result: Map[String, PrecisionRecallF1[String]], labeled : Boolean = true) {
 
   //classify-[firstname]-[lastname]-[lju]-[nbjlrjsvm].run
   

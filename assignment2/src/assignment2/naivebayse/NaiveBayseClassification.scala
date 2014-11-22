@@ -2,7 +2,6 @@ package assignment2.naivebayse
 
 import assignment.io.ResultWriter
 import assignment2.index.FeatureBuilder
-import assignment2.index.IndexBuilder
 import assignment2.score.PrecisionRecallF1
 import breeze.linalg.SparseVector
 import ch.ethz.dal.classifier.processing.ReutersCorpusIterator
@@ -24,46 +23,45 @@ object NaiveBayseClassification extends App {
 
   val trainDataIter: ReutersCorpusIterator = new ReutersCorpusIterator(trainDataPath)
   val testDataLabeledIter: ReutersCorpusIterator = new ReutersCorpusIterator(testDataLabeledPath)
-
+  val sw = new StopWatch; sw.start
   println("Start building index")
-  val idx: FeatureBuilder = new FeatureBuilder(trainDataIter)
+  val idx: FeatureBuilder = new FeatureBuilder(trainDataIter, testDataLabeledIter)
+
+  println(" time = " + sw.uptonow)
 
   println("Start labeled test data")
-  val sw = new StopWatch; sw.start
 
-  val idxTest: FeatureBuilder = new FeatureBuilder(testDataLabeledIter)
-
-  val testFeatures = idxTest.features;
+  val testFeatures = idx.testDocLabels;
 
   var progress: Int = 0
-  val resultScore = scala.collection.mutable.Map[String, PrecisionRecallF1[String]]()
-  testFeatures.foreach {
+
+  val resultScore = testFeatures.map {
     x =>
-      val f = x._2;
-      val result = naiveBayse(x._2, idx.labelCounts.keySet.toList);
+      val f = idx.features(x._1);
+      val result = naiveBayse(f, idx.labelCounts.keySet.toList);
       val sortedResult = sortByProbability(result)
-      resultScore += x._1 -> new PrecisionRecallF1(sortedResult, idxTest.labels(x._1).toSet)
-
+      
       progress += 1
-
       if (progress % 100 == 0) {
         println("progress = " + progress.toDouble / 50000 * 100 + " % " + " time = " + sw.uptonow)
-      }
+      }     
+      
+      (x._1 , new PrecisionRecallF1(sortedResult, idx.testDocLabels(x._1).toSet))
   }
 
   sw.stop
   println("Stopped time = " + sw.stopped)
   println("Start writing result")
-  new ResultWriter("classify-cyrill-zadra-l-nb.run", resultScore).write()
+  new ResultWriter("classify-cyrill-zadra-l-nb.run", resultScore.toMap).write()
 
   println("Start unlabeled test data")
   //TODO
   println("Finished")
 
   private def naiveBayse(doc: SparseVector[Double], topics: List[String]): List[(String, Double)] = {
-    val x = topics.map { topic =>
+    val x = topics.par.map { topic =>
       val features: Map[String, SparseVector[Double]] =
-        idx.labelDocs(topic).map(doc => (doc -> idx.features(doc))).toMap
+        idx.trainLabelDocs(topic).map(doc => (doc -> idx.features(doc))).toMap
 
       topic -> (math.log(p(topic)) +
         doc.mapActivePairs((k, v) => v * math.log(pwc(k, features, topic, doc.sum.toInt))).sum.toDouble)
@@ -78,18 +76,9 @@ object NaiveBayseClassification extends App {
     val alpha = 1.0
     var x = 0.0;
     var y = 0.0;
-    val word : String = idxTest.wordIndex(wordIndex)
     features.map {
       f =>
-        val index: Int = {
-          if (idx.words.contains(word))
-            idx.words(word)
-          else
-            0
-        }
-
-        x += f._2(index) + alpha
-
+        x += f._2(wordIndex) + alpha
         y += idx.docLength(f._1) + alpha * numberOfWords.toDouble
     }
     (x / y)
@@ -112,8 +101,8 @@ object NaiveBayseClassification extends App {
    * sorty by probablity
    */
   private def sortByProbability(r: List[(String, Double)]): Seq[String] = {
-    r.sortBy(_._2).map(f => f._1).toSeq.take(5)
-
+    val sorted = r.sortBy(_._2).reverse.map(f => f._1).toSeq.take(5)
+    sorted
   }
 
 }
