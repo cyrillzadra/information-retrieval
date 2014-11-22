@@ -32,7 +32,8 @@ object NaiveBayseClassification extends App {
   for ((t, c) <- idx.topicCounts)
     println(t + ": " + c + " documents")
 
-  println(idx.nrOfDocuments + " docs in corpus")
+  println(idx.nrOfDocuments + " docs in corpus") 
+//  println(idx.numberOfTokensPerTopic.take(10))
 
   val resultScore = scala.collection.mutable.Map[String, PrecisionRecallF1[String]]()
   var progress: Int = 0
@@ -55,9 +56,9 @@ object NaiveBayseClassification extends App {
   private def naiveBayse(tokens: List[String], topics: List[String]): List[(String, Double)] = {
     val x = topics.map { topic =>
       //println(topic)
-      println(math.log(p(topic)) + " " + tokens.groupBy(identity).map(t => t._2.size.toDouble
-        * math.log(pwc(t._1, topic, tokens.size))).sum.toDouble)
-      topic -> (math.log(p(topic)) + tokens.groupBy(identity).map(word =>
+//      println(math.log(p(topic)) + " " + tokens.groupBy(identity).map(t => t._2.size.toDouble
+//        * math.log(pwc(t._1, topic, tokens.size))).sum.toDouble)
+      topic -> (idx.pcIndex(topic) + tokens.groupBy(identity).map(word =>
         word._2.size.toDouble * math.log(pwc(word._1, topic, tokens.size))).sum.toDouble)
     }
     x
@@ -77,21 +78,14 @@ object NaiveBayseClassification extends App {
   //TODO numberOfWords .. should it be distinct?
   private def pwc(word: String, topic: String, numberOfWords: Int): Double = {
     //la place smoothing
-    val alpha = 1.0
-    var x = 0.0;
+//    val alpha = 1.0
+    var pwc = 0.0;
     if (idx.index.contains(word)) {
-      //println("word => " + word)
-      //println("topic => " + topic)
-      //println("topic len(d) => " + idx.numberOfTokensPerTopic(topic).sum.toDouble)
-      //println("word index => " + idx.index(word))
-      //println("word filtered  index => " + idx.index(word).filter(p => p.topic.equals(topic)))
-      x = idx.index(word).map(x => x.tf.toDouble + alpha).sum.toDouble / idx.numberOfTokensPerTopic(topic).map(len =>
-        len.toDouble + alpha * numberOfWords.toDouble).sum.toDouble
+        pwc = idx.index(word).map(x => x.tf.toDouble).sum.toDouble / idx.numberOfTokensPerTopic2(topic).toDouble
     } else {
-      x = 0.toDouble
+      pwc = 0.toDouble
     }
-    //println(x)
-    x
+    pwc
   }
 
 }

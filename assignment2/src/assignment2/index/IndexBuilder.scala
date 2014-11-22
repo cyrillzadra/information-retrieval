@@ -52,5 +52,10 @@ class IndexBuilder(data: ReutersCorpusIterator) {
   val index: scala.collection.mutable.Map[String, List[Postings]] = idx._4;
   
   val numberOfTokensPerTopic: scala.collection.mutable.Map[String, List[Int]] = idx._5;
+  
+  val numberOfTokensPerTopic2: scala.collection.Map[String, Int] = 
+    numberOfTokensPerTopic.mapValues( x => x.reduce(_+_) )
+  
+  val pcIndex = topicCounts.mapValues( x => math.log( x / nrOfDocuments ) )
 
 }

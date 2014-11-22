@@ -10,7 +10,7 @@ import assignment2.score.PrecisionRecallF1
  */
 class ResultWriter(fileName: String, result: scala.collection.mutable.Map[String, PrecisionRecallF1[String]]) {
 
-  //classify-[rstname]-[lastname]-[lju]-[nbjlrjsvm].run
+  //classify-[firstname]-[lastname]-[lju]-[nbjlrjsvm].run
   
   val writer = new PrintWriter(new File(fileName))
 
