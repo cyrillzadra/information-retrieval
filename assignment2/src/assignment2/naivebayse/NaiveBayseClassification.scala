@@ -7,6 +7,7 @@ import assignment2.StopWords
 import assignment2.index.IndexBuilder
 import assignment2.score.PrecisionRecallF1
 import assignment.io.ResultWriter
+import ch.ethz.dal.tinyir.util.StopWatch
 
 /**
  * Build a document classification system that:
@@ -28,10 +29,11 @@ object NaiveBayseClassification extends App {
   println("Start building index")
   val idx: IndexBuilder = new IndexBuilder(trainDataIter)
 
-  println(idx.nrOfDocuments + " docs in corpus") 
-  
+  println(idx.nrOfDocuments + " docs in corpus")
+
   println("Start training")
-  
+  val sw = new StopWatch; sw.start
+
   val resultScore = scala.collection.mutable.Map[String, PrecisionRecallF1[String]]()
   var progress: Int = 0
   while (testDataLabeledIter.hasNext) {
@@ -42,22 +44,24 @@ object NaiveBayseClassification extends App {
     resultScore += doc.name -> new PrecisionRecallF1(sortedResult, doc.topics)
 
     if (progress % 1000 == 0) {
-      println("progress = " + progress.toDouble / 50000 * 100 + " % ")
+      println("progress = " + progress.toDouble / 50000 * 100 + " % " + " time = " + sw.uptonow)
     }
 
   }
-  
+  sw.stop
+  println("Stopped time = " + sw.stopped)
+
   println("Start writing result")
 
   new ResultWriter("classify-cyrill-zadra-l-nb.run", resultScore).write()
-  
+
   println("Finished")
 
   private def naiveBayse(tokens: List[String], topics: List[String]): List[(String, Double)] = {
     val x = topics.map { topic =>
       //println(topic)
-//      println(math.log(p(topic)) + " " + tokens.groupBy(identity).map(t => t._2.size.toDouble
-//        * math.log(pwc(t._1, topic, tokens.size))).sum.toDouble)
+      //      println(math.log(p(topic)) + " " + tokens.groupBy(identity).map(t => t._2.size.toDouble
+      //        * math.log(pwc(t._1, topic, tokens.size))).sum.toDouble)
       topic -> (idx.pcIndex(topic) + tokens.groupBy(identity).map(word =>
         word._2.size.toDouble * math.log(pwc(word._1, topic, tokens.size))).sum.toDouble)
     }
@@ -68,7 +72,7 @@ object NaiveBayseClassification extends App {
     //return max probability
     r.maxBy(_._2)._1
   }
-  
+
   //TODO how many 
   private def sortByProbability(r: List[(String, Double)]): Seq[String] = {
     //return max probability
@@ -78,10 +82,10 @@ object NaiveBayseClassification extends App {
   //TODO numberOfWords .. should it be distinct?
   private def pwc(word: String, topic: String, numberOfWords: Int): Double = {
     //la place smoothing
-//    val alpha = 1.0
+    //    val alpha = 1.0
     var pwc = 0.0;
     if (idx.index.contains(word)) {
-        pwc = idx.index(word).map(x => x.tf.toDouble).sum.toDouble / idx.numberOfTokensPerTopic2(topic).toDouble
+      pwc = idx.index(word).map(x => x.tf.toDouble).sum.toDouble / idx.numberOfTokensPerTopic2(topic).toDouble
     } else {
       pwc = 0.toDouble
     }
