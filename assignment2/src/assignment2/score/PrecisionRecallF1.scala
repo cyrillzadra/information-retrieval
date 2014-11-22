@@ -5,8 +5,14 @@ import collection.Seq
 import util.Random
 import math.{ min, max }
 
-class PrecisionRecallF1[A](ranked: Seq[A], relev: Set[A]) {
+class PrecisionRecallF1[A](_ranked: Seq[A], relev: Set[A]) {
 
+  //precision recall f1 score
+  val prF1 = evaluate(_ranked, relev)
+  
+  //ranked items
+  val ranked = _ranked;
+  
   // total number of relevant items  
   val num = relev.size
 
@@ -33,10 +39,6 @@ class PrecisionRecallF1[A](ranked: Seq[A], relev: Set[A]) {
     else precs(n - 1)
   }
 
-}
-
-object PrecisionRecallF1 {
-
   case class PrecRec(precision: Double, recall: Double, f1: Double) {
     def mkstr: String = "P = " + precision + ", R = " + recall + ", F1 = " + f1
   }
@@ -46,31 +48,37 @@ object PrecisionRecallF1 {
     ((math.pow(beta, 2) + 1) * prec * recall) / (math.pow(beta, 2) * prec + recall)
   }
 
-  def evaluate[A](retriev: Set[A], relev: Set[A]) = {
-    val truePos = (retriev & relev).size
+  def evaluate[A](ranked: Seq[A], relev: Set[A]) = {
+    val truePos = (ranked.toSet & relev).size
     PrecRec(
-      precision = truePos.toDouble / retriev.size.toDouble,
+      precision = truePos.toDouble / ranked.size.toDouble,
       recall = truePos.toDouble / relev.size.toDouble,
-      f1 = evalF1(truePos.toDouble, relev.size.toDouble))
+      f1 = evalF1(truePos.toDouble / ranked.size.toDouble, truePos.toDouble / relev.size.toDouble))
   }
+
+}
+
+object PrecisionRecallF1 {
 
   def main(args: Array[String]) = {
     {
-      val relevant = Set(3, 6, 7, 8, 9)
-      val retrieved = Set(1, 2, 3, 6)
-      println(PrecisionRecallF1.evaluate(retrieved, relevant).mkstr)
-    }
-
-    {
-      val relevant = Set(3, 7, 9, 15, 19)
-      val ranked = Random.shuffle((0 to 19).toList)
+      val ranked = Seq(3, 5, 10, 11, 12, 13)
+      val relevant = Random.shuffle((0 to 7).toSet)
 
       val pr = new PrecisionRecallF1(ranked, relevant)
       println(pr.relevIdx.mkString(" "))
       println(pr.precs.mkString(" "))
       println(pr.iprecs.mkString(" "))
 
-      val recall = 0.65
+      val prF1 = pr.evaluate(ranked, relevant)
+
+      println(prF1.mkstr)
+
+      assert((prF1.precision == (1.0 / 3.0)))
+      assert((prF1.recall == (1.0 / 4.0)))
+      assert((math.round(prF1.f1 * 100) == math.round((2.0 / 7.0) * 100)))
+
+      val recall = 0.25
       println("Precision (non interp. ) at " + recall + " = " + pr.precAt(recall, false))
       println("Precision (interpolated) at " + recall + " = " + pr.precAt(recall, true))
     }
