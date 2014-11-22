@@ -41,7 +41,7 @@ class IndexBuilder(data: ReutersCorpusIterator) {
       }
 
     }
-
+    
     sw.stop
     println("Stopped time = " + sw.stopped)
 
@@ -55,6 +55,9 @@ class IndexBuilder(data: ReutersCorpusIterator) {
   val nrOfTokens: Double = idx._3;
 
   val index: scala.collection.mutable.Map[String, List[Postings]] = idx._4;
+  
+  val index2: scala.collection.immutable.Map[String, scala.collection.immutable.Map[String,Int]] = 
+    index.mapValues( x => x.map( y => y.topic -> y.tf ).toMap).toMap
 
   val numberOfTokensPerTopic: scala.collection.mutable.Map[String, List[Int]] = idx._5;
 

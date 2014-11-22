@@ -20,7 +20,7 @@ import ch.ethz.dal.tinyir.util.StopWatch
  */
 object NaiveBayseClassification extends App {
 
-  val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train_small/";
+  val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train/";
   val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels-small/";
 
   val trainDataIter: ReutersCorpusIterator = new ReutersCorpusIterator(trainDataPath)
@@ -31,6 +31,11 @@ object NaiveBayseClassification extends App {
 
   println(idx.nrOfDocuments + " docs in corpus")
 
+  println(idx.index2.take(2))
+
+  println(idx.index.size)
+  println(idx.index2.size)
+  
   println("Start training")
   val sw = new StopWatch; sw.start
 
@@ -43,7 +48,7 @@ object NaiveBayseClassification extends App {
     val sortedResult = sortByProbability(result)
     resultScore += doc.name -> new PrecisionRecallF1(sortedResult, doc.topics)
 
-    if (progress % 1000 == 0) {
+    if (progress % 100 == 0) {
       println("progress = " + progress.toDouble / 50000 * 100 + " % " + " time = " + sw.uptonow)
     }
 
@@ -59,13 +64,15 @@ object NaiveBayseClassification extends App {
 
   private def naiveBayse(tokens: List[String], topics: List[String]): List[(String, Double)] = {
     val x = topics.map { topic =>
-      //println(topic)
-      //      println(math.log(p(topic)) + " " + tokens.groupBy(identity).map(t => t._2.size.toDouble
-      //        * math.log(pwc(t._1, topic, tokens.size))).sum.toDouble)
       topic -> (idx.pcIndex(topic) + tokens.groupBy(identity).map(word =>
         word._2.size.toDouble * math.log(pwc(word._1, topic, tokens.size))).sum.toDouble)
     }
     x
+  }
+
+  def p(c: String): Double = {
+    val p = idx.topicCounts(c).toDouble / idx.nrOfDocuments.toDouble
+    p
   }
 
   private def maxArg(r: List[(String, Double)]): String = {
@@ -83,13 +90,41 @@ object NaiveBayseClassification extends App {
   private def pwc(word: String, topic: String, numberOfWords: Int): Double = {
     //la place smoothing
     //    val alpha = 1.0
+    try {
+      val x = idx.index2(word)(topic).toDouble / idx.numberOfTokensPerTopic2(topic).toDouble
+      x
+    } catch {
+      case t: NoSuchElementException => 0.0
+    }    
+  }
+  
+  private def pwc2(word: String, topic: String, numberOfWords: Int): Double = {
+    //la place smoothing
+    //    val alpha = 1.0
     var pwc = 0.0;
     if (idx.index.contains(word)) {
-      pwc = idx.index(word).map(x => x.tf.toDouble).sum.toDouble / idx.numberOfTokensPerTopic2(topic).toDouble
+      pwc = idx.index(word).filter(f => f.topic == topic).map(x => x.tf.toDouble).sum.toDouble / idx.numberOfTokensPerTopic2(topic).toDouble
     } else {
       pwc = 0.toDouble
     }
     pwc
   }
+
+  /*
+   *   //TODO numberOfWords .. should it be distinct?
+  private def pwc(word: String, topic: String, numberOfWords: Int): Double = {
+    //la place smoothing
+    //    val alpha = 1.0
+    val t : Any = idx.index2.getOrElse(word, 0);
+    
+    def matchTest(t: Any): Double = t match {
+      case 0.0 => 0.0
+      case y: scala.collection.Map[String,Int] => 
+        y.getOrElse(topic, 0).toDouble / idx.numberOfTokensPerTopic2(topic).toDouble
+    }
+
+    matchTest(t) 
+  }
+   */
 
 }
