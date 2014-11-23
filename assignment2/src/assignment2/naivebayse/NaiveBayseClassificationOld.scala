@@ -21,7 +21,7 @@ import ch.ethz.dal.tinyir.util.StopWatch
 object NaiveBayseClassificationOld extends App {
 
   val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train/";
-  val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels-small/";
+  val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels/";
 
   val trainDataIter: ReutersCorpusIterator = new ReutersCorpusIterator(trainDataPath)
   val testDataLabeledIter: ReutersCorpusIterator = new ReutersCorpusIterator(testDataLabeledPath)
