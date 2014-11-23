@@ -53,8 +53,6 @@ object NaiveBayseClassification extends App {
   println("Start writing result")
   new ResultWriter("classify-cyrill-zadra-l-nb.run", resultScore.toMap, true).write()
 
-  println("Start unlabeled test data")
-
   println("Finished")
 
   private def naiveBayse(tokens: List[String], topics: List[String]): List[(String, Double)] = {
