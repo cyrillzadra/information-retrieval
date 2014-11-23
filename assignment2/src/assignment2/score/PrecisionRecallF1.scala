@@ -4,7 +4,7 @@ package assignment2.score
 import collection.Seq
 import util.Random
 import math.{ min, max }
-import assignment.io.ResultWriter
+import assignment2.io.ResultWriter
 
 class PrecisionRecallF1[A](_ranked: Seq[A], relev: Set[A]) {
 

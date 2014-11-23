@@ -23,18 +23,18 @@ class IndexBuilder(data: ReutersCorpusIterator) {
 
       val tfMap = doc.tokens.groupBy(identity);
       val tf = tfMap.mapValues(l => l.length)
-      topicCounts ++= doc.topics.map(c => (c -> (1 + topicCounts.getOrElse(c, 0))))      
-      
-      trainLabelLength ++= doc.topics.map(c => (c -> (doc.tokens.size + trainLabelLength.getOrElse(c, 0))))
-        
-      val y = tfMap.map(x => (x._1 -> x._2.length))      
-      val x = doc.topics.map( t => t -> y   ).toMap
+      topicCounts ++= doc.topics.map(c => (c -> (1 + topicCounts.getOrElse(c, 0))))
 
-      x.map { c => 
-          var temp : scala.collection.mutable.Map[String,Int] = index2.getOrElse(c._1, scala.collection.mutable.Map[String,Int]() )
-          temp ++= c._2.map( x => x._1 -> (x._2 + temp.getOrElse(x._1, 0))  )
-          index2(c._1) = temp 
-          
+      trainLabelLength ++= doc.topics.map(c => (c -> (doc.tokens.size + trainLabelLength.getOrElse(c, 0))))
+
+      val y = tfMap.map(x => (x._1 -> x._2.length))
+      val x = doc.topics.map(t => t -> y).toMap
+
+      x.map { c =>
+        var temp: scala.collection.mutable.Map[String, Int] = index2.getOrElse(c._1, scala.collection.mutable.Map[String, Int]())
+        temp ++= c._2.map(x => x._1 -> (x._2 + temp.getOrElse(x._1, 0)))
+        index2(c._1) = temp
+
       }
 
       if (documentCounts % 10000 == 0) {
@@ -53,9 +53,9 @@ class IndexBuilder(data: ReutersCorpusIterator) {
   val topicCounts: scala.collection.mutable.Map[String, Int] = idx._1;
 
   val nrOfDocuments: Double = idx._2;
-  
+
   val trainLabelLength = idx._3;
-  
+
   val index2 = idx._4
 
 }

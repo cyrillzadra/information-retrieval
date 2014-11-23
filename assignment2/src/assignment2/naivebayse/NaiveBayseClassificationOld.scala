@@ -6,7 +6,7 @@ import ch.ethz.dal.classifier.processing.Tokenizer
 import assignment2.StopWords
 import assignment2.index.IndexBuilder
 import assignment2.score.PrecisionRecallF1
-import assignment.io.ResultWriter
+import assignment2.io.ResultWriter
 import ch.ethz.dal.tinyir.util.StopWatch
 
 /**

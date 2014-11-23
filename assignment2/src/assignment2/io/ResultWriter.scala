@@ -1,4 +1,4 @@
-package assignment.io
+package assignment2.io
 
 import java.io.File
 import java.io.PrintWriter

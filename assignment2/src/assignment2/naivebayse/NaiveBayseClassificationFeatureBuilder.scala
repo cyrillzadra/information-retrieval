@@ -1,6 +1,6 @@
 package assignment2.naivebayse
 
-import assignment.io.ResultWriter
+import assignment2.io.ResultWriter
 import assignment2.index.FeatureBuilder
 import assignment2.score.PrecisionRecallF1
 import breeze.linalg.SparseVector
@@ -16,7 +16,7 @@ import ch.ethz.dal.tinyir.util.StopWatch
  * I computes precision, recall and F1 score for a test collection of
  * documents
  */
-object NaiveBayseClassification extends App {
+object NaiveBayseClassificationFeatureBuilder extends App {
 
   val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train-small/";
   val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels-small/";
