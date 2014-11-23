@@ -4,15 +4,16 @@ package assignment2.score
 import collection.Seq
 import util.Random
 import math.{ min, max }
+import assignment.io.ResultWriter
 
 class PrecisionRecallF1[A](_ranked: Seq[A], relev: Set[A]) {
 
   //precision recall f1 score
   val prF1 = evaluate(_ranked, relev)
-  
+
   //ranked items
   val ranked = _ranked;
-  
+
   // total number of relevant items  
   val num = relev.size
 
@@ -39,8 +40,8 @@ object PrecisionRecallF1 {
 
   def main(args: Array[String]) = {
     {
-      val ranked = Seq(3, 5, 10, 11, 12, 13)
-      val relevant = Random.shuffle((0 to 7).toSet)
+      val ranked = Seq("test 1", "test 2", "3", "4", "5", "6")
+      val relevant = List("test 1", "test 2", "t1", "t2", "t3", "t4", "t5", "t6").toSet
 
       val pr = new PrecisionRecallF1(ranked, relevant)
       val prF1 = pr.evaluate(ranked, relevant)
@@ -50,6 +51,10 @@ object PrecisionRecallF1 {
       assert((prF1.precision == (1.0 / 3.0)))
       assert((prF1.recall == (1.0 / 4.0)))
       assert((math.round(prF1.f1 * 100) == math.round((2.0 / 7.0) * 100)))
+
+      val result = Map[String, PrecisionRecallF1[String]]("test" -> pr)
+
+      new ResultWriter("test.txt", result).write()
     }
   }
 }

@@ -13,12 +13,14 @@ class FeatureBuilder(train: ReutersCorpusIterator, test: ReutersCorpusIterator) 
     val trainLabelDocs = scala.collection.mutable.Map[String, List[String]]()
     val labelCounts = scala.collection.mutable.Map[String, Int]()
     val words = scala.collection.mutable.Set[String]()
+    val trainWords = scala.collection.mutable.Set[String]()
     while (train.hasNext) {
       val doc = train.next
       val tf = doc.tokens.groupBy(identity).mapValues(l => l.length)
       docs += (doc.name -> tf.toList)
       trainDocLength += (doc.name -> doc.tokens.size)
       words ++= tf.map(c => c._1)
+      trainWords ++= tf.map(c => c._1)
       trainDocLabels += (doc.name -> doc.topics.toList)
       trainLabelDocs ++= doc.topics.map(c => (c -> (List(doc.name) ++ trainLabelDocs.getOrElse(c, List()))))
       labelCounts ++= doc.topics.map(c => (c -> (1 + labelCounts.getOrElse(c, 0))))
@@ -53,7 +55,7 @@ class FeatureBuilder(train: ReutersCorpusIterator, test: ReutersCorpusIterator) 
       features += d._1 -> v
     }
 
-    (features, wordIndex, trainDocLabels, labelCounts, trainLabelDocs, trainDocLength, wordSeq, testDocLabels)
+    (features, wordIndex, trainDocLabels, labelCounts, trainLabelDocs, trainDocLength, wordSeq, testDocLabels, trainWords)
   }
 
   val features: Map[String, SparseVector[Double]] = idx._1.toMap;
@@ -71,6 +73,8 @@ class FeatureBuilder(train: ReutersCorpusIterator, test: ReutersCorpusIterator) 
   val wordIndex = idx._7
 
   val testDocLabels = idx._8
+  
+  val trainWords = idx._9
 
 }
 

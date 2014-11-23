@@ -36,9 +36,9 @@ object NaiveBayseClassification extends App {
   var progress: Int = 0
 
   val resultScore = testFeatures.par.map {
-    x =>
-      val f = idx.features(x._1);
-      val result = naiveBayse(f, idx.labelCounts.keySet.toList);
+    x =>      
+      val testDoc = idx.features(x._1);
+      val result = naiveBayse(testDoc, idx.labelCounts.keySet.toList);
       val sortedResult = sortByProbability(result)
 
       progress += 1
@@ -62,7 +62,7 @@ object NaiveBayseClassification extends App {
     //use par collection
     val x = topics.map { topic =>
       val features: Map[String, SparseVector[Double]] =
-        idx.trainLabelDocs(topic).par.map(doc => (doc -> idx.features(doc))).toList.toMap
+        idx.trainLabelDocs(topic).map(doc => (doc -> idx.features(doc))).toMap
 
       topic -> (math.log(p(topic)) +
         doc.mapActivePairs((k, v) => v * math.log(pwc(k, features, topic, doc.sum.toInt))).sum.toDouble)
@@ -71,7 +71,7 @@ object NaiveBayseClassification extends App {
   }
 
   private def pwc(wordIndex: Int, features: Map[String, SparseVector[Double]],
-                  topic: String, numberOfWords: Int): Double = {
+                  topic: String, numberOfWords: Int): Double = {    
     //la place smoothing
     val alpha = 1.0
     var x = 0.0
