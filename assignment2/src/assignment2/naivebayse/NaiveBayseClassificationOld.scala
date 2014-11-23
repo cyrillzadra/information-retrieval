@@ -21,7 +21,7 @@ import ch.ethz.dal.tinyir.util.StopWatch
 object NaiveBayseClassificationOld extends App {
 
   val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train/";
-  val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels/";
+  val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels-small/";
 
   val trainDataIter: ReutersCorpusIterator = new ReutersCorpusIterator(trainDataPath)
   val testDataLabeledIter: ReutersCorpusIterator = new ReutersCorpusIterator(testDataLabeledPath)
@@ -44,7 +44,7 @@ object NaiveBayseClassificationOld extends App {
     val sortedResult = sortByProbability(result)
     resultScore += doc.name -> new PrecisionRecallF1(sortedResult, doc.topics)       
 
-    if (progress % 100 == 0) {
+    if (progress % 2500 == 0) {
       println("progress = " + progress.toDouble / 50000 * 100 + " % " + " time = " + sw.uptonow)
     }
   }
@@ -76,7 +76,7 @@ object NaiveBayseClassificationOld extends App {
     val tf: Int = topicTf.getOrElse(word,0)
 
     val x = tf + numberOfDocuments * alpha
-    val y = labelLength + alpha * numberOfWords.toDouble
+    val y = labelLength + alpha * numberOfDocuments * numberOfWords.toDouble
 
     (x / y)
   }
