@@ -12,6 +12,7 @@ import com.github.aztek.porterstemmer.PorterStemmer
 import assignment2.index.FeatureBuilder
 import assignment2.score.PrecisionRecallF1
 import assignment2.io.ResultWriter
+import ch.ethz.dal.tinyir.util.StopWatch
 
 case class DataPoint(x: Vector[Double], y: Double)
 
@@ -20,7 +21,7 @@ case class Postings(val docId: String, val tf: Int)
 object SvmClassification extends App {
 
   val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train-small/";
-  val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels-small/";
+  val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels/";
 
   val trainDataIter: ReutersCorpusIterator = new ReutersCorpusIterator(trainDataPath)
   val testDataLabeledIter: ReutersCorpusIterator = new ReutersCorpusIterator(testDataLabeledPath)
@@ -34,10 +35,11 @@ object SvmClassification extends App {
   //learn
   var topicThetas = scala.collection.mutable.Map[String, DenseVector[Double]]()
   topicThetas ++= featureBuilder.labelCounts.keys.map(x => x -> DenseVector.zeros[Double](dim))
+  val sw = new StopWatch; sw.start
 
   for (theta <- topicThetas) {
     val topic = theta._1
-    val samples = 1000;
+    val samples = 10000;
     var step: Int = 1
 
     breakable {
@@ -57,6 +59,9 @@ object SvmClassification extends App {
 
       }
     }
+    
+    println(" time = " + sw.uptonow)
+
 
   }
 
@@ -64,27 +69,27 @@ object SvmClassification extends App {
 
   for (doc <- featureBuilder.testDocLabels) {
     val feature = featureBuilder.features(doc._1)
-    var scores = scala.collection.mutable.MutableList[(String,Double,Double)]()
-    
+    var scores = scala.collection.mutable.MutableList[(String, Double, Double)]()
+
     for (theta <- topicThetas) {
-      scores ++= List(hingeLoss(theta._1, feature, theta._2))      
+      scores ++= List(hingeLoss(theta._1, feature, theta._2))
     }
-    
-    val sortedResult = priority(scores.toList); 
+
+    val sortedResult = priority(scores.toList);
     println("score " + doc._1 + " -> " + sortedResult);
     resultScore += doc._1 -> new PrecisionRecallF1(sortedResult, doc._2.toSet)
   }
 
   new ResultWriter("classify-cyrill-zadra-l-svm.run", resultScore.toMap, true).write()
 
-  def priority(score : List[(String,Double,Double)] ) : Seq[String] = {
+  def priority(score: List[(String, Double, Double)]): Seq[String] = {
     score.filter(p => p._2 < p._3).sortBy(_._3).map(s => s._1).toSeq.take(5)
   }
-  
+
   /**
    * Hinge loss l(ThetaVector;(~xVector; y)) = max{0,1 - y<ThetaVector,xVector> }
    */
-  def hingeLoss(topic : String, f: SparseVector[Double], theta: DenseVector[Double]): (String, Double, Double) = {
+  def hingeLoss(topic: String, f: SparseVector[Double], theta: DenseVector[Double]): (String, Double, Double) = {
     val p = theta.dot(f)
     (topic, math.max(0.0, 1 - (-1 * p)), math.max(0.0, 1 - (1 * p)))
   }

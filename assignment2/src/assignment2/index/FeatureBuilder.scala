@@ -29,7 +29,6 @@ class FeatureBuilder(train: ReutersCorpusIterator, test: ReutersCorpusIterator) 
 
     while (test.hasNext) {
       val doc = test.next
-      if(doc.name.equals("379083")) println ("FOUNDFOUNDFOUND")
       val tf = doc.tokens.groupBy(identity).mapValues(l => l.length)
       docs += (doc.name -> tf.toList)
       words ++= tf.map(c => c._1)
