@@ -18,7 +18,7 @@ import ch.ethz.dal.tinyir.util.StopWatch
  * I computes precision, recall and F1 score for a test collection of
  * documents
  */
-object NaiveBayseClassificationOld extends App {
+object NaiveBayseClassification extends App {
 
   val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train/";
   val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels/";
