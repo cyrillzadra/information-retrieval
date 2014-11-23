@@ -8,9 +8,10 @@ class FeatureBuilder(train: ReutersCorpusIterator, test: ReutersCorpusIterator) 
   val idx = {
     val docs = scala.collection.mutable.Map[String, List[(String, Int)]]()
     val trainDocLength = scala.collection.mutable.Map[String, Int]()
-    val trainDocLabels = scala.collection.mutable.Map[String, List[String]]()
-    val testDocLabels = scala.collection.mutable.Map[String, List[String]]()
+    val trainDocLabels = scala.collection.mutable.Map[String, List[String]]()    
     val trainLabelDocs = scala.collection.mutable.Map[String, List[String]]()
+    
+    val testDocLabels = scala.collection.mutable.Map[String, List[String]]()
     val labelCounts = scala.collection.mutable.Map[String, Int]()
     val words = scala.collection.mutable.Set[String]()
     val trainWords = scala.collection.mutable.Set[String]()
@@ -28,6 +29,7 @@ class FeatureBuilder(train: ReutersCorpusIterator, test: ReutersCorpusIterator) 
 
     while (test.hasNext) {
       val doc = test.next
+      if(doc.name.equals("379083")) println ("FOUNDFOUNDFOUND")
       val tf = doc.tokens.groupBy(identity).mapValues(l => l.length)
       docs += (doc.name -> tf.toList)
       words ++= tf.map(c => c._1)
@@ -49,7 +51,7 @@ class FeatureBuilder(train: ReutersCorpusIterator, test: ReutersCorpusIterator) 
 
     //build feature vector
     val features = scala.collection.mutable.Map[String, SparseVector[Double]]()
-    for (d <- docs) {
+    for (d <- docs) {      
       val v = SparseVector.zeros[Double](dim)
       d._2.map(word => v(wordIndex(word._1)) = word._2)
       features += d._1 -> v
@@ -72,9 +74,11 @@ class FeatureBuilder(train: ReutersCorpusIterator, test: ReutersCorpusIterator) 
 
   val wordIndex = idx._7
 
-  val testDocLabels = idx._8
+  val testDocLabels : scala.collection.mutable.Map[String, List[String]] = idx._8
   
-  val trainWords = idx._9
+  val trainWords : Set[String] = idx._9.toSet
+  
+  val dim : Int = words.size
 
 }
 
@@ -96,6 +100,7 @@ object FeatureBuilder {
     println("lableCounts =    " + f1.labelCounts)
     println("trainLabelDocs = " + f1.trainLabelDocs)
     println("docLength =      " + f1.docLength)
+    println("testDocLabels =  " + f1.testDocLabels)
 
     println("Train Data & Unlabeled Data")
 
@@ -111,6 +116,8 @@ object FeatureBuilder {
     println("lableCounts =    " + f2.labelCounts)
     println("trainLabelDocs = " + f2.trainLabelDocs)
     println("docLength =      " + f2.docLength)
+    println("testDocLabels =  " + f2.testDocLabels)
+
 
   }
 
