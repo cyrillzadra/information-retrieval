@@ -20,8 +20,8 @@ import ch.ethz.dal.tinyir.util.StopWatch
  */
 object NaiveBayseClassificationOld extends App {
 
-  val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train-small/";
-  val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-without-labels/test-without-labels-small/";
+  val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train/";
+  val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels/";
 
   val trainDataIter: ReutersCorpusIterator = new ReutersCorpusIterator(trainDataPath)
   val testDataLabeledIter: ReutersCorpusIterator = new ReutersCorpusIterator(testDataLabeledPath)
@@ -42,7 +42,7 @@ object NaiveBayseClassificationOld extends App {
 
     val result = naiveBayse(doc.tokens, idx.topicCounts.keySet.toList);
     val sortedResult = sortByProbability(result)
-    resultScore += doc.name -> new PrecisionRecallF1(sortedResult, doc.topics)       
+    resultScore += doc.name -> new PrecisionRecallF1(sortedResult, doc.topics)
 
     if (progress % 2500 == 0) {
       println("progress = " + progress.toDouble / 50000 * 100 + " % " + " time = " + sw.uptonow)
@@ -51,7 +51,7 @@ object NaiveBayseClassificationOld extends App {
   sw.stop
   println("Stopped time = " + sw.stopped)
   println("Start writing result")
-  new ResultWriter("classify-cyrill-zadra-u-nb.run", resultScore.toMap, false).write()
+  new ResultWriter("classify-cyrill-zadra-l-nb.run", resultScore.toMap, true).write()
 
   println("Start unlabeled test data")
 
@@ -61,24 +61,20 @@ object NaiveBayseClassificationOld extends App {
     val tf = tokens.groupBy(identity);
     val x = topics.par.map { topic =>
       val topicTf: scala.collection.mutable.Map[String, Int] = idx.index2(topic)
-      val numberOfDocuments = idx.trainLabelDocs(topic).size
       val labelLength = idx.trainLabelLength(topic)
 
       topic -> (math.log(p(topic)) + tf.par.map(word =>
-        word._2.size.toDouble * math.log(pwc(word._1, topic, tokens.size, topicTf, numberOfDocuments, labelLength))).sum.toDouble)
+        word._2.size.toDouble * math.log(pwc(word._1, topic, tokens.size, topicTf, labelLength))).sum.toDouble)
     }
     x.toList
   }
 
-  private def pwc(word: String, topic: String, numberOfWords: Int, topicTf: scala.collection.mutable.Map[String, Int], numberOfDocuments : Int, labelLength : Int): Double = {
+  private def pwc(word: String, topic: String, numberOfWords: Int, topicTf: scala.collection.mutable.Map[String, Int], labelLength: Int): Double = {
     //la place smoothing
-    val alpha = 1.0    
-    val tf: Int = topicTf.getOrElse(word,0)
+    val alpha = 1.0
+    val tf: Int = topicTf.getOrElse(word, 0)
 
-    val x = tf + numberOfDocuments * alpha
-    val y = labelLength + alpha * numberOfDocuments * numberOfWords.toDouble
-
-    (x / y)
+    (tf.toDouble + alpha) / (labelLength.toDouble + alpha * numberOfWords.toDouble)
   }
 
   def p(c: String): Double = {

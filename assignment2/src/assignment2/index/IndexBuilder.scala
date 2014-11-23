@@ -34,7 +34,7 @@ class IndexBuilder(data: ReutersCorpusIterator) {
       trainLabelLength ++= doc.topics.map(c => (c -> (doc.tokens.size + trainLabelLength.getOrElse(c, 0))))
       
       
-      trainLabelDocs ++= doc.topics.map(c => (c -> (List(doc.name) ++ trainLabelDocs.getOrElse(c, List()))))
+      //trainLabelDocs ++= doc.topics.map(c => (c -> (List(doc.name) ++ trainLabelDocs.getOrElse(c, List()))))
         
       val y = tfMap.map(x => (x._1 -> x._2.length))      
       val x = doc.topics.map( t => t -> y   ).toMap
