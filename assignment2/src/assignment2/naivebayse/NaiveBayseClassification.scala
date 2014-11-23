@@ -61,6 +61,7 @@ object NaiveBayseClassification extends App {
   private def naiveBayse(doc: SparseVector[Double], topics: List[String]): List[(String, Double)] = {
     //use par collection
     val x = topics.map { topic =>
+           
       val features: Map[String, SparseVector[Double]] =
         idx.trainLabelDocs(topic).map(doc => (doc -> idx.features(doc))).toMap
 

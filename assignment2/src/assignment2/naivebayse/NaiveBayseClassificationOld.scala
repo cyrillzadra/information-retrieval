@@ -20,8 +20,8 @@ import ch.ethz.dal.tinyir.util.StopWatch
  */
 object NaiveBayseClassificationOld extends App {
 
-  val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train-small/";
-  val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels-small/";
+  val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train/";
+  val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels/";
 
   val trainDataIter: ReutersCorpusIterator = new ReutersCorpusIterator(trainDataPath)
   val testDataLabeledIter: ReutersCorpusIterator = new ReutersCorpusIterator(testDataLabeledPath)
@@ -39,9 +39,10 @@ object NaiveBayseClassificationOld extends App {
   while (testDataLabeledIter.hasNext) {
     progress += 1;
     val doc = testDataLabeledIter.next
+
     val result = naiveBayse(doc.tokens, idx.topicCounts.keySet.toList);
     val sortedResult = sortByProbability(result)
-    resultScore += doc.name -> new PrecisionRecallF1(sortedResult, doc.topics)
+    resultScore += doc.name -> new PrecisionRecallF1(sortedResult, doc.topics)       
 
     if (progress % 100 == 0) {
       println("progress = " + progress.toDouble / 50000 * 100 + " % " + " time = " + sw.uptonow)
@@ -59,25 +60,23 @@ object NaiveBayseClassificationOld extends App {
   private def naiveBayse(tokens: List[String], topics: List[String]): List[(String, Double)] = {
     val tf = tokens.groupBy(identity);
     val x = topics.par.map { topic =>
+      val topicTf: scala.collection.mutable.Map[String, Int] = idx.index2(topic)
+      val numberOfDocuments = idx.trainLabelDocs(topic).size
+      val labelLength = idx.trainLabelLength(topic)
+
       topic -> (math.log(p(topic)) + tf.par.map(word =>
-        word._2.size.toDouble * math.log(pwc(word._1, topic, tokens.size))).sum.toDouble)
+        word._2.size.toDouble * math.log(pwc(word._1, topic, tokens.size, topicTf, numberOfDocuments, labelLength))).sum.toDouble)
     }
     x.toList
   }
 
-  private def pwc(word: String, topic: String, numberOfWords: Int): Double = {
+  private def pwc(word: String, topic: String, numberOfWords: Int, topicTf: scala.collection.mutable.Map[String, Int], numberOfDocuments : Int, labelLength : Int): Double = {
     //la place smoothing
-    val alpha = 1.0
-    var x = 0.0;
-    var y = 0.0;
-    
-    idx.trainLabelDocs(topic).map{ f => 
-      val doc = idx.trainDocs(f)
-      val tf : Int = { if(doc.contains(word)) doc(word) else 0 }
-      
-      x += (tf + alpha)
-      y += (idx.trainDocLength(f) + alpha * numberOfWords.toDouble)
-    }
+    val alpha = 1.0    
+    val tf: Int = topicTf.getOrElse(word,0)
+
+    val x = tf + numberOfDocuments * alpha
+    val y = labelLength + alpha * numberOfWords.toDouble
 
     (x / y)
   }
