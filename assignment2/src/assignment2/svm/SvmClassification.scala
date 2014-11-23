@@ -37,7 +37,7 @@ object SvmClassification extends App {
 
   for (theta <- topicThetas) {
     val topic = theta._1
-    val samples = 10;
+    val samples = 100;
     var step: Int = 1
 
     breakable {
@@ -64,23 +64,29 @@ object SvmClassification extends App {
 
   for (doc <- featureBuilder.testDocLabels) {
     val feature = featureBuilder.features(doc._1)
-    val l = hingeLoss(feature, topicThetas("GCAT"))
-    val f = if (l._1 < l._2) "NOTFOUND" else "   FOUND"
-    val sortedResult = if (l._1 < l._2) List() else List("GCAT")
-    println(doc._1 + " : " + f + " -> " + l)
-
+    var scores = scala.collection.mutable.MutableList[(String,Double,Double)]()
+    
+    for (theta <- topicThetas) {
+      scores ++= List(hingeLoss(theta._1, feature, theta._2))      
+    }
+    
+    val sortedResult = priority(scores.toList); 
+    println("score " + doc._1 + " -> " + sortedResult);
     resultScore += doc._1 -> new PrecisionRecallF1(sortedResult, doc._2.toSet)
-
   }
 
   new ResultWriter("classify-cyrill-zadra-l-svm.run", resultScore.toMap, true).write()
 
+  def priority(score : List[(String,Double,Double)] ) : Seq[String] = {
+    score.filter(p => p._2 < p._3).sortBy(_._3).map(s => s._1).toSeq.take(5)
+  }
+  
   /**
    * Hinge loss l(ThetaVector;(~xVector; y)) = max{0,1 - y<ThetaVector,xVector> }
    */
-  def hingeLoss(f: SparseVector[Double], theta: DenseVector[Double]): (Double, Double) = {
+  def hingeLoss(topic : String, f: SparseVector[Double], theta: DenseVector[Double]): (String, Double, Double) = {
     val p = theta.dot(f)
-    (math.max(0.0, 1 - (-1 * p)), math.max(0.0, 1 - (1 * p)))
+    (topic, math.max(0.0, 1 - (-1 * p)), math.max(0.0, 1 - (1 * p)))
   }
 
   def updateStep(theta: DenseVector[Double], p: DataPoint,
