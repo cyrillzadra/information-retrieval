@@ -14,7 +14,11 @@ class ResultWriter(fileName: String, result: Map[String, PrecisionRecallF1[Strin
 
   val writer = new PrintWriter(new File(fileName))
 
+  //output for labeled data
   //precision recall f1score
+  //doc_id topic1 topic2 ...
+  
+  //output for labeled data
   //doc_id topic1 topic2 ...
   def write() = {
 
@@ -29,8 +33,7 @@ class ResultWriter(fileName: String, result: Map[String, PrecisionRecallF1[Strin
 
     if (labeled) { 
       val out = "F1 Avg = %s".format((totalF1 / result.size.toDouble))
-      writer.write(out)
-      //println(out)      
+      writer.write(out) 
     }
 
     writer.close()

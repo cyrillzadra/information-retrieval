@@ -20,8 +20,8 @@ import ch.ethz.dal.tinyir.util.StopWatch
  */
 object NaiveBayseClassificationOld extends App {
 
-  val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train/";
-  val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels/";
+  val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train-small/";
+  val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-without-labels/test-without-labels-small/";
 
   val trainDataIter: ReutersCorpusIterator = new ReutersCorpusIterator(trainDataPath)
   val testDataLabeledIter: ReutersCorpusIterator = new ReutersCorpusIterator(testDataLabeledPath)
@@ -51,7 +51,7 @@ object NaiveBayseClassificationOld extends App {
   sw.stop
   println("Stopped time = " + sw.stopped)
   println("Start writing result")
-  new ResultWriter("classify-cyrill-zadra-l-nb.run", resultScore.toMap).write()
+  new ResultWriter("classify-cyrill-zadra-u-nb.run", resultScore.toMap, false).write()
 
   println("Start unlabeled test data")
 
