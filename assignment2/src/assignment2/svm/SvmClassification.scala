@@ -39,7 +39,7 @@ object SvmClassification extends App {
 
   for (theta <- topicThetas) {
     val topic = theta._1
-    val samples = 1000;
+    val samples = 10000;
     var step: Int = 1
 
     breakable {
