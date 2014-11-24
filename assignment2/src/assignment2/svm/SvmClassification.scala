@@ -14,13 +14,13 @@ import assignment2.score.PrecisionRecallF1
 import assignment2.io.ResultWriter
 import ch.ethz.dal.tinyir.util.StopWatch
 
-case class DataPoint(x: Vector[Double], y: Double)
+case class DataPoint(x: SparseVector[Double], y: Double)
 
 case class Postings(val docId: String, val tf: Int)
 
 object SvmClassification extends App {
 
-  val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train-small/";
+  val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train/";
   val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels/";
 
   val trainDataIter: ReutersCorpusIterator = new ReutersCorpusIterator(trainDataPath)
@@ -33,27 +33,29 @@ object SvmClassification extends App {
   println(featureBuilder.features.take(10))
 
   //learn
-  var topicThetas = scala.collection.mutable.Map[String, DenseVector[Double]]()
-  topicThetas ++= featureBuilder.labelCounts.keys.map(x => x -> DenseVector.zeros[Double](dim))
+  var topicThetas = scala.collection.mutable.Map[String, SparseVector[Double]]()
+  topicThetas ++= featureBuilder.labelCounts.keys.map(x => x -> SparseVector.zeros[Double](dim))
   val sw = new StopWatch; sw.start
 
   for (theta <- topicThetas) {
     val topic = theta._1
-    val samples = 10000;
+    val samples = 1000;
     var step: Int = 1
 
     breakable {
       for (featureKey <- featureBuilder.trainDocLabels.keySet) {
-
-        val y = featureBuilder.trainDocLabels(featureKey).find(x => x == topic) match {
+        val _t = topicThetas(theta._1)
+        
+        val topics = featureBuilder.trainDocLabels(featureKey)
+        val y = topics.find(x => x == topic) match {
           case Some(_) => 1
           case None    => -1
         }
 
         val feature = featureBuilder.features(featureKey)
         val lambda: Double = 1.0
-
-        topicThetas(theta._1) = updateStep(theta._2, new DataPoint(feature, y), lambda, step)
+        val t = updateStep(_t, new DataPoint(feature, y), lambda, step)
+        topicThetas(theta._1) = t;
         step += 1
         if (step == samples) break
 
@@ -76,25 +78,27 @@ object SvmClassification extends App {
     }
 
     val sortedResult = priority(scores.toList);
-    println("score " + doc._1 + " -> " + sortedResult);
+    //println("score " + doc._1 + " -> " + sortedResult);
     resultScore += doc._1 -> new PrecisionRecallF1(sortedResult, doc._2.toSet)
   }
 
   new ResultWriter("classify-cyrill-zadra-l-svm.run", resultScore.toMap, true).write()
 
   def priority(score: List[(String, Double, Double)]): Seq[String] = {
+    //println(score)
     score.filter(p => p._2 < p._3).sortBy(_._3).map(s => s._1).toSeq.take(5)
+    //score.sortBy(_._3).reverse.map(s => s._1).toSeq.take(5)
   }
 
   /**
    * Hinge loss l(ThetaVector;(~xVector; y)) = max{0,1 - y<ThetaVector,xVector> }
    */
-  def hingeLoss(topic: String, f: SparseVector[Double], theta: DenseVector[Double]): (String, Double, Double) = {
+  def hingeLoss(topic: String, f: SparseVector[Double], theta: SparseVector[Double]): (String, Double, Double) = {
     val p = theta.dot(f)
     (topic, math.max(0.0, 1 - (-1 * p)), math.max(0.0, 1 - (1 * p)))
   }
 
-  def updateStep(theta: DenseVector[Double], p: DataPoint,
+  def updateStep(theta: SparseVector[Double], p: DataPoint,
                  lambda: Double, step: Int) = {
     val stepSize = 1 / (lambda * step)
 
