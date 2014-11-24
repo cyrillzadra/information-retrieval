@@ -4,7 +4,7 @@ import assignment2.naivebayse.NaiveBayseClassification
 import assignment2.regression.LogistictRegressionClassification
 import assignment2.svm.SvmClassification
 
-object Main1 extends App {
+object Main extends App {
 
   /**
    *  -trainData [directory]
