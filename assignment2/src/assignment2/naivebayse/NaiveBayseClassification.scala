@@ -39,7 +39,7 @@ class NaiveBayseClassification(trainDataPath: String, testDataLabeledPath: Strin
     sw.stop
     println("Stopped time = " + sw.stopped)
     println("Start writing result")
-    new ResultWriter("classify-cyrill-zadra-%-nb.run", resultScore.toMap, labeled).write()
+    new ResultWriter("classify-cyrill-zadra-s%-nb.run", resultScore.toMap, labeled).write()
 
     println("Finished")
 

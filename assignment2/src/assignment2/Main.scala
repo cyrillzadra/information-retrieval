@@ -32,7 +32,7 @@ object Main extends App {
       throw new Exception("labeled argument should be [true|flase] but is : " + labeled)
   }
 
-  val c = initClassificationType(classType);
+  val c = initClassificationType(classType)
 
   c.process();
 

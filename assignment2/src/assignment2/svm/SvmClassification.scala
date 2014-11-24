@@ -77,7 +77,7 @@ class SvmClassification(trainDataPath: String, testDataLabeledPath: String, labe
       resultScore += doc._1 -> new PrecisionRecallF1(sortedResult, doc._2.toSet)
     }
 
-    new ResultWriter("classify-cyrill-zadra-%-svm.run", resultScore.toMap, labeled).write()
+    new ResultWriter("classify-cyrill-zadra-s%-svm.run", resultScore.toMap, labeled).write()
 
     println("FINISHED")
 
