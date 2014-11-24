@@ -6,11 +6,13 @@ import ch.ethz.dal.classifier.processing.ReutersCorpusIterator
 class FeatureBuilder(train: ReutersCorpusIterator, test: ReutersCorpusIterator) {
 
   val idx = {
+    println("Start Feature Builder")
+
     val docs = scala.collection.mutable.Map[String, List[(String, Int)]]()
     val trainDocLength = scala.collection.mutable.Map[String, Int]()
-    val trainDocLabels = scala.collection.mutable.Map[String, List[String]]()    
+    val trainDocLabels = scala.collection.mutable.Map[String, List[String]]()
     val trainLabelDocs = scala.collection.mutable.Map[String, List[String]]()
-    
+
     val testDocLabels = scala.collection.mutable.Map[String, List[String]]()
     val labelCounts = scala.collection.mutable.Map[String, Int]()
     val words = scala.collection.mutable.Set[String]()
@@ -50,7 +52,7 @@ class FeatureBuilder(train: ReutersCorpusIterator, test: ReutersCorpusIterator) 
 
     //build feature vector
     val features = scala.collection.mutable.Map[String, SparseVector[Double]]()
-    for (d <- docs) {      
+    for (d <- docs) {
       val v = SparseVector.zeros[Double](dim)
       d._2.map(word => v(wordIndex(word._1)) = word._2)
       features += d._1 -> v
@@ -73,11 +75,11 @@ class FeatureBuilder(train: ReutersCorpusIterator, test: ReutersCorpusIterator) 
 
   val wordIndex = idx._7
 
-  val testDocLabels : scala.collection.mutable.Map[String, List[String]] = idx._8
-  
-  val trainWords : Set[String] = idx._9.toSet
-  
-  val dim : Int = words.size
+  val testDocLabels: scala.collection.mutable.Map[String, List[String]] = idx._8
+
+  val trainWords: Set[String] = idx._9.toSet
+
+  val dim: Int = words.size
 
 }
 
@@ -116,7 +118,6 @@ object FeatureBuilder {
     println("trainLabelDocs = " + f2.trainLabelDocs)
     println("docLength =      " + f2.docLength)
     println("testDocLabels =  " + f2.testDocLabels)
-
 
   }
 

@@ -10,6 +10,7 @@ class IndexBuilder(data: ReutersCorpusIterator) {
   val NUMBER_OF_DOCUMENTS = 200000;
 
   val idx = {
+    println("Start building index")
     val topicCounts = scala.collection.mutable.Map[String, Int]()
     var documentCounts = 0.0;
     val trainLabelLength = scala.collection.mutable.Map[String, Int]()
@@ -47,6 +48,8 @@ class IndexBuilder(data: ReutersCorpusIterator) {
     sw.stop
     println("Stopped time = " + sw.stopped)
 
+    println(documentCounts + " docs in corpus")
+    
     (topicCounts, documentCounts, trainLabelLength, index2)
   }
 

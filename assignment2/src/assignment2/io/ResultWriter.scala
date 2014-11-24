@@ -10,14 +10,16 @@ import assignment2.score.PrecisionRecallF1
  */
 class ResultWriter(fileName: String, result: Map[String, PrecisionRecallF1[String]], labeled: Boolean = true) {
 
-  //classify-[firstname]-[lastname]-[lju]-[nbjlrjsvm].run
+  //classify-[firstname]-[lastname]-[l|u]-[nb|lr|svm].run
 
-  val writer = new PrintWriter(new File(fileName))
+  val l : String = if(labeled) "l" else "u"
+
+  val writer = new PrintWriter(new File(fileName.format(l)))
 
   //output for labeled data
   //precision recall f1score
   //doc_id topic1 topic2 ...
-  
+
   //output for labeled data
   //doc_id topic1 topic2 ...
   def write() = {
@@ -31,9 +33,9 @@ class ResultWriter(fileName: String, result: Map[String, PrecisionRecallF1[Strin
       writer.write("%s %s \n".format(f._1, f._2.ranked.mkString(" ")))
     }
 
-    if (labeled) { 
+    if (labeled) {
       val out = "F1 Avg = %s".format((totalF1 / result.size.toDouble))
-      writer.write(out) 
+      println(out)
     }
 
     writer.close()

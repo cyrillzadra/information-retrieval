@@ -8,52 +8,42 @@ import assignment2.index.IndexBuilder
 import assignment2.score.PrecisionRecallF1
 import assignment2.io.ResultWriter
 import ch.ethz.dal.tinyir.util.StopWatch
+import assignment2.Classification
 
-/**
- * Build a document classification system that:
- * I parses a document collection and extracts doc features
- * I handles multiple topic labels per training document
- * I assignes multiple topic labels for a test document using three
- * dierent approaches : Naive Bayes, Logistic Regression, SVM
- * I computes precision, recall and F1 score for a test collection of
- * documents
- */
-object NaiveBayseClassification extends App {
-
-  val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train/";
-  val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels/";
+class NaiveBayseClassification(trainDataPath: String, testDataLabeledPath: String, labeled: Boolean)
+  extends Classification {
 
   val trainDataIter: ReutersCorpusIterator = new ReutersCorpusIterator(trainDataPath)
   val testDataLabeledIter: ReutersCorpusIterator = new ReutersCorpusIterator(testDataLabeledPath)
 
-  println("Start building index")
   val idx: IndexBuilder = new IndexBuilder(trainDataIter)
 
-  println(idx.nrOfDocuments + " docs in corpus")
+  def process() = {
+    println("Start labeled test data")
+    val sw = new StopWatch; sw.start
 
-  println("Start labeled test data")
-  val sw = new StopWatch; sw.start
+    val resultScore = scala.collection.mutable.Map[String, PrecisionRecallF1[String]]()
+    var progress: Int = 0
+    while (testDataLabeledIter.hasNext) {
+      progress += 1;
+      val doc = testDataLabeledIter.next
 
-  val resultScore = scala.collection.mutable.Map[String, PrecisionRecallF1[String]]()
-  var progress: Int = 0
-  while (testDataLabeledIter.hasNext) {
-    progress += 1;
-    val doc = testDataLabeledIter.next
+      val result = naiveBayse(doc.tokens, idx.topicCounts.keySet.toList);
+      val sortedResult = sortByProbability(result)
+      resultScore += doc.name -> new PrecisionRecallF1(sortedResult, doc.topics)
 
-    val result = naiveBayse(doc.tokens, idx.topicCounts.keySet.toList);
-    val sortedResult = sortByProbability(result)
-    resultScore += doc.name -> new PrecisionRecallF1(sortedResult, doc.topics)
-
-    if (progress % 2500 == 0) {
-      println("progress = " + progress.toDouble / 50000 * 100 + " % " + " time = " + sw.uptonow)
+      if (progress % 2500 == 0) {
+        println("progress = " + progress.toDouble / 50000 * 100 + " % " + " time = " + sw.uptonow)
+      }
     }
-  }
-  sw.stop
-  println("Stopped time = " + sw.stopped)
-  println("Start writing result")
-  new ResultWriter("classify-cyrill-zadra-l-nb.run", resultScore.toMap, true).write()
+    sw.stop
+    println("Stopped time = " + sw.stopped)
+    println("Start writing result")
+    new ResultWriter("classify-cyrill-zadra-%-nb.run", resultScore.toMap, labeled).write()
 
-  println("Finished")
+    println("Finished")
+
+  }
 
   private def naiveBayse(tokens: List[String], topics: List[String]): List[(String, Double)] = {
     val tf = tokens.groupBy(identity);
@@ -85,6 +75,20 @@ object NaiveBayseClassification extends App {
    */
   private def sortByProbability(r: List[(String, Double)]): Seq[String] = {
     r.sortBy(_._2).reverse.map(f => f._1).toSeq.take(5)
+  }
+
+}
+
+object NaiveBayseClassification {
+
+  def main(args: Array[String]) = {
+
+    val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train-small/";
+    val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels/";
+
+    val c = new NaiveBayseClassification(trainDataPath, testDataLabeledPath, true)
+
+    c.process()
   }
 
 }
