@@ -1,7 +1,7 @@
 package assignment2.naivebayse
 
-import assignment2.io.ResultWriter
 import assignment2.index.FeatureBuilder
+import assignment2.io.ResultWriter
 import assignment2.score.PrecisionRecallF1
 import breeze.linalg.SparseVector
 import ch.ethz.dal.classifier.processing.ReutersCorpusIterator
@@ -52,7 +52,7 @@ object NaiveBayseClassificationFeatureBuilder extends App {
   sw.stop
   println("Stopped time = " + sw.stopped)
   println("Start writing result")
-  new ResultWriter("classify-cyrill-zadra-l-nb.run", resultScore.toList.toMap).write()
+  new ResultWriter(resultScore.toList.toMap, "nb", true).write()
 
   println("Start unlabeled test data")
   //TODO

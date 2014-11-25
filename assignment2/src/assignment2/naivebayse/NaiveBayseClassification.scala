@@ -1,14 +1,11 @@
 package assignment2.naivebayse
 
-import ch.ethz.dal.classifier.processing.ReutersCorpusIterator
-import com.github.aztek.porterstemmer.PorterStemmer
-import ch.ethz.dal.classifier.processing.Tokenizer
-import assignment2.StopWords
-import assignment2.index.IndexBuilder
-import assignment2.score.PrecisionRecallF1
-import assignment2.io.ResultWriter
-import ch.ethz.dal.tinyir.util.StopWatch
 import assignment2.Classification
+import assignment2.index.IndexBuilder
+import assignment2.io.ResultWriter
+import assignment2.score.PrecisionRecallF1
+import ch.ethz.dal.classifier.processing.ReutersCorpusIterator
+import ch.ethz.dal.tinyir.util.StopWatch
 
 class NaiveBayseClassification(trainDataPath: String, testDataLabeledPath: String, labeled: Boolean)
   extends Classification {
@@ -39,7 +36,7 @@ class NaiveBayseClassification(trainDataPath: String, testDataLabeledPath: Strin
     sw.stop
     println("Stopped time = " + sw.stopped)
     println("Start writing result")
-    new ResultWriter("classify-cyrill-zadra-s%-nb.run", resultScore.toMap, labeled).write()
+    new ResultWriter(resultScore.toMap, "nb", labeled).write()
 
     println("Finished")
 
@@ -84,7 +81,7 @@ object NaiveBayseClassification {
   def main(args: Array[String]) = {
 
     val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train-small/";
-    val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels/";
+    val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels-small/";
 
     val c = new NaiveBayseClassification(trainDataPath, testDataLabeledPath, true)
 

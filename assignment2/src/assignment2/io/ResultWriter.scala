@@ -8,8 +8,10 @@ import assignment2.score.PrecisionRecallF1
 /**
  * Writes result to a given file.
  */
-class ResultWriter(fileName: String, result: Map[String, PrecisionRecallF1[String]], labeled: Boolean = true) {
+class ResultWriter(result: Map[String, PrecisionRecallF1[String]], classType : String, labeled: Boolean = true) {
 
+  val fileName = "classify-cyrill-zadra"
+  
   val l: String = if (labeled) "l" else "u"
 
   /**
@@ -17,7 +19,7 @@ class ResultWriter(fileName: String, result: Map[String, PrecisionRecallF1[Strin
    *
    * classify-[firstname]-[lastname]-[l|u]-[nb|lr|svm].run
    */
-  val writer = new PrintWriter(new File(fileName.format(l)))
+  val writer = new PrintWriter(new File(fileName + "-" + l + "-" + classType +".run"))
 
   /**
    * output for labeled data:

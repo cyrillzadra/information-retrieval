@@ -1,24 +1,19 @@
 package assignment2.regression
 
-import scala.util.control.Breaks._
-import breeze.linalg.DenseVector
-import breeze.linalg.Vector
-import ch.ethz.dal.classifier.processing.ReutersCorpusIterator
-import breeze.linalg.DenseMatrix
-import breeze.linalg.SparseVector
-import assignment2.StopWords
-import ch.ethz.dal.classifier.processing.Tokenizer
-import com.github.aztek.porterstemmer.PorterStemmer
-import assignment2.index.FeatureBuilder
-import assignment2.score.PrecisionRecallF1
-import assignment2.io.ResultWriter
-import ch.ethz.dal.tinyir.util.StopWatch
+import scala.annotation.migration
 import scala.util.Random
+import scala.util.control.Breaks.break
+import scala.util.control.Breaks.breakable
+
 import assignment2.Classification
+import assignment2.index.FeatureBuilder
+import assignment2.io.ResultWriter
+import assignment2.score.PrecisionRecallF1
+import breeze.linalg.SparseVector
+import ch.ethz.dal.classifier.processing.ReutersCorpusIterator
+import ch.ethz.dal.tinyir.util.StopWatch
 
-case class DataPoint(x: SparseVector[Double], y: Double)
-
-class LogistictRegressionClassification(trainDataPath: String, testDataLabeledPath: String, labeled: Boolean) 
+class LogisticRegressionClassification(trainDataPath: String, testDataLabeledPath: String, labeled: Boolean) 
   extends Classification {
 
   val trainDataIter: ReutersCorpusIterator = new ReutersCorpusIterator(trainDataPath)
@@ -56,10 +51,9 @@ class LogistictRegressionClassification(trainDataPath: String, testDataLabeledPa
           val feature = featureBuilder.features(featureKey)
           val lambda: Double = 1.0
 
-          //        val gradient = points.map { p => p.x * 
+          //        val gradient = points.map { p =>       p.x * 
           //          (logistic(p.y * w.dot(p.x)) - 1) * p.y }.reduce(_ + _)
-          //        
-          //        
+    
           val t = update(_t, feature, y)
           topicThetas(theta._1) = t;
           step += 1
@@ -85,7 +79,7 @@ class LogistictRegressionClassification(trainDataPath: String, testDataLabeledPa
       resultScore += doc._1 -> new PrecisionRecallF1(sortedResult, doc._2.toSet)
     }
 
-    new ResultWriter("classify-cyrill-zadra-s%-lr.run", resultScore.toMap, labeled).write()
+    new ResultWriter(resultScore.toMap, "lr", labeled).write()
 
     println("FINISHED")
   }
@@ -114,7 +108,7 @@ object LogisticRegressionClassification {
     val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train-small/";
     val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels/";
 
-    val c = new LogistictRegressionClassification(trainDataPath, testDataLabeledPath, true)
+    val c = new LogisticRegressionClassification(trainDataPath, testDataLabeledPath, true)
 
     c.process()
   }

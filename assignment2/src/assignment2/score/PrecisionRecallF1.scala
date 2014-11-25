@@ -54,7 +54,7 @@ object PrecisionRecallF1 {
 
       val result = Map[String, PrecisionRecallF1[String]]("test" -> pr)
 
-      new ResultWriter("test.txt", result).write()
+      new ResultWriter(result,"TEST",true).write()
     }
   }
 }

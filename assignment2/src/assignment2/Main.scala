@@ -1,7 +1,7 @@
 package assignment2
 
 import assignment2.naivebayse.NaiveBayseClassification
-import assignment2.regression.LogistictRegressionClassification
+import assignment2.regression.LogisticRegressionClassification
 import assignment2.svm.SvmClassification
 
 object Main extends App {
@@ -38,7 +38,7 @@ object Main extends App {
 
   def initClassificationType(t: String): Classification = t match {
     case "NB"  => new NaiveBayseClassification(trainDataPath, testDataPath, l)
-    case "LR"  => new LogistictRegressionClassification(trainDataPath, testDataPath, l)
+    case "LR"  => new LogisticRegressionClassification(trainDataPath, testDataPath, l)
     case "SVM" => new SvmClassification(trainDataPath, testDataPath, l)
     case _     => throw new Exception("-type should be [NB|LR|SVM] but is : " + t)
   }

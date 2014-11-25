@@ -1,19 +1,16 @@
 package assignment2.svm
 
-import scala.util.control.Breaks._
-import breeze.linalg.DenseVector
-import breeze.linalg.Vector
-import ch.ethz.dal.classifier.processing.ReutersCorpusIterator
-import breeze.linalg.DenseMatrix
-import breeze.linalg.SparseVector
-import assignment2.StopWords
-import ch.ethz.dal.classifier.processing.Tokenizer
-import com.github.aztek.porterstemmer.PorterStemmer
-import assignment2.index.FeatureBuilder
-import assignment2.score.PrecisionRecallF1
-import assignment2.io.ResultWriter
-import ch.ethz.dal.tinyir.util.StopWatch
+import scala.annotation.migration
+import scala.util.control.Breaks.break
+import scala.util.control.Breaks.breakable
+
 import assignment2.Classification
+import assignment2.index.FeatureBuilder
+import assignment2.io.ResultWriter
+import assignment2.score.PrecisionRecallF1
+import breeze.linalg.SparseVector
+import ch.ethz.dal.classifier.processing.ReutersCorpusIterator
+import ch.ethz.dal.tinyir.util.StopWatch
 
 case class DataPoint(x: SparseVector[Double], y: Double)
 
@@ -29,14 +26,13 @@ class SvmClassification(trainDataPath: String, testDataLabeledPath: String, labe
     val dim: Int = featureBuilder.dim;
 
     println("Start learning")
-    //learn
     var topicThetas = scala.collection.mutable.Map[String, SparseVector[Double]]()
     topicThetas ++= featureBuilder.labelCounts.keys.map(x => x -> SparseVector.zeros[Double](dim))
     val sw = new StopWatch; sw.start
 
     for (theta <- topicThetas) {
       val topic = theta._1
-      val samples = 10000;
+      val samples = 10;
       var step: Int = 1
 
       breakable {
@@ -77,7 +73,7 @@ class SvmClassification(trainDataPath: String, testDataLabeledPath: String, labe
       resultScore += doc._1 -> new PrecisionRecallF1(sortedResult, doc._2.toSet)
     }
 
-    new ResultWriter("classify-cyrill-zadra-s%-svm.run", resultScore.toMap, labeled).write()
+    new ResultWriter(resultScore.toMap, "svm", labeled).write()
 
     println("FINISHED")
 
@@ -117,7 +113,7 @@ object SvmClassification {
   def main(args: Array[String]) = {
     
     val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train-small/";
-    val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels/";
+    val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels-small/";
 
     val c = new SvmClassification(trainDataPath, testDataLabeledPath, true)
 
