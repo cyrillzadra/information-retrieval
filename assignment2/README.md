@@ -26,11 +26,14 @@ For instance:
 
 -trainData C:/IR/trainData/ -testData C:/IR/test-with-labels/ -labeled true -type SVM
 
+# General Classification Information
+
+All 3 classification techniques are one-vs-all approach.
+All 3 classification techniques are using StopWords (assignment2.StopWords.scala) and Stemming (com.github.aztek.porterstemmer.PortStemmer.scala)
+
 # Naive Bayse
 
 Class assignment2.naivebayse.NaiveBayseClassification
-
-Used: one-vs-all
 
 F1 Avg = 0.18959501932990883
 
@@ -38,13 +41,9 @@ F1 Avg = 0.18959501932990883
 
 Class assignment2.regression.LogisticRegressionClassification
 
-Used: one-vs-all
-
 # SVM - Support Vector Machines
 
 Class assignment2.svm.SvmClassification
-
-Used: one-vs-all
 
 F1 Avg = 0.3002290216193687
 

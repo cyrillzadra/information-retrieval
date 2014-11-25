@@ -19,7 +19,7 @@ class SvmClassification(trainDataPath: String, testDataLabeledPath: String, labe
 
   val trainDataIter: ReutersCorpusIterator = new ReutersCorpusIterator(trainDataPath)
   val testDataLabeledIter: ReutersCorpusIterator = new ReutersCorpusIterator(testDataLabeledPath)
-  
+
   val featureBuilder: FeatureBuilder = new FeatureBuilder(trainDataIter, testDataLabeledIter)
 
   def process() = {
@@ -80,9 +80,7 @@ class SvmClassification(trainDataPath: String, testDataLabeledPath: String, labe
   }
 
   def priority(score: List[(String, Double, Double)]): Seq[String] = {
-    //println(score)
     score.filter(p => p._2 < p._3).sortBy(_._3).map(s => s._1).toSeq.take(5)
-    //score.sortBy(_._3).reverse.map(s => s._1).toSeq.take(5)
   }
 
   /**
@@ -111,7 +109,7 @@ class SvmClassification(trainDataPath: String, testDataLabeledPath: String, labe
 object SvmClassification {
 
   def main(args: Array[String]) = {
-    
+
     val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train-small/";
     val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels-small/";
 
