@@ -41,6 +41,8 @@ F1 Avg = 0.18959501932990883
 
 Class assignment2.regression.LogisticRegressionClassification
 
+P= 0.1592772146319149 , R= 0.27407038396564426 , F1= 0.19102499514718105
+
 # SVM - Support Vector Machines
 
 Class assignment2.svm.SvmClassification

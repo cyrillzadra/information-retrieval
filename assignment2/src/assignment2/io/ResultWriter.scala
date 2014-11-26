@@ -39,8 +39,8 @@ class ResultWriter(result: Map[String, PrecisionRecallF1[String]], classType : S
     result.foreach { f =>
       if (labeled) {
         if (!f._2.prF1.f1.isNaN) totalF1 += f._2.prF1.f1
+        if (!f._2.prF1.recall.isNaN) totalR += f._2.prF1.recall
         totalP += f._2.prF1.precision
-        totalR += f._2.prF1.recall
         writer.write("%s %s %s \n".format(f._2.prF1.precision, f._2.prF1.recall, f._2.prF1.f1))
       }
       writer.write("%s %s \n".format(f._1, f._2.ranked.mkString(" ")))

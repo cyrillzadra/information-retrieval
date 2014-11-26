@@ -13,7 +13,7 @@ import breeze.linalg.SparseVector
 import ch.ethz.dal.classifier.processing.ReutersCorpusIterator
 import ch.ethz.dal.tinyir.util.StopWatch
 
-class LogisticRegressionClassification(trainDataPath: String, testDataLabeledPath: String, labeled: Boolean) 
+class LogisticRegressionClassification(trainDataPath: String, testDataLabeledPath: String, labeled: Boolean)
   extends Classification {
 
   val trainDataIter: ReutersCorpusIterator = new ReutersCorpusIterator(trainDataPath)
@@ -35,7 +35,7 @@ class LogisticRegressionClassification(trainDataPath: String, testDataLabeledPat
 
     for (theta <- topicThetas) {
       val topic = theta._1
-      val samples = 1;
+      val samples = 10000;
       var step: Int = 1
 
       breakable {
@@ -50,10 +50,6 @@ class LogisticRegressionClassification(trainDataPath: String, testDataLabeledPat
 
           val feature = featureBuilder.features(featureKey)
           val lambda: Double = 1.0
-
-          //        val gradient = points.map { p =>       p.x * 
-          //          (logistic(p.y * w.dot(p.x)) - 1) * p.y }.reduce(_ + _)
-    
           val t = update(_t, feature, y)
           topicThetas(theta._1) = t;
           step += 1
@@ -62,17 +58,18 @@ class LogisticRegressionClassification(trainDataPath: String, testDataLabeledPat
         }
       }
 
-      println("topic =  + " + theta._1 + " time = " + sw.uptonow)
+      println("topic = " + theta._1 + " time = " + sw.uptonow)
 
     }
 
     var resultScore = scala.collection.mutable.Map[String, PrecisionRecallF1[String]]()
     for (doc <- featureBuilder.testDocLabels) {
       val feature = featureBuilder.features(doc._1)
-      var scores = scala.collection.mutable.MutableList[(String, Double, Double)]()
+      var scores = scala.collection.mutable.MutableList[(String, Double)]()
 
       for (theta <- topicThetas) {
-        //scores ++= List(logistic(theta._1, feature, theta._2))
+        val s = logistic(theta._2, feature)
+        scores ++= List((theta._1, s))
       }
 
       val sortedResult = priority(scores.toList);
@@ -84,8 +81,8 @@ class LogisticRegressionClassification(trainDataPath: String, testDataLabeledPat
     println("FINISHED")
   }
 
-  def priority(score: List[(String, Double, Double)]): Seq[String] = {
-    score.filter(p => p._2 < p._3).sortBy(_._3).map(s => s._1).toSeq.take(5)
+  def priority(score: List[(String, Double)]): Seq[String] = {
+    score.sortBy(_._2).reverse.map(s => s._1).toSeq.take(5)
   }
 
   def logistic(x: SparseVector[Double], y: SparseVector[Double]): Double = {
@@ -104,7 +101,7 @@ class LogisticRegressionClassification(trainDataPath: String, testDataLabeledPat
 object LogisticRegressionClassification {
 
   def main(args: Array[String]) = {
-    
+
     val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train-small/";
     val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels/";
 
