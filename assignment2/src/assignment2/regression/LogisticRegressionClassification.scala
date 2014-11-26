@@ -21,44 +21,41 @@ class LogisticRegressionClassification(trainDataPath: String, testDataLabeledPat
 
   val featureBuilder: FeatureBuilder = new FeatureBuilder(trainDataIter, testDataLabeledIter)
 
-  val dim: Int = featureBuilder.dim;
-
   def process() = {
+    val dim: Int = featureBuilder.dim;
+    val NUMBER_OF_ITERATIONS = 10000;
+
     println("Start learning")
-    //learn
+    val sw = new StopWatch; sw.start
+
     val rand = new Random()
     var topicThetas = scala.collection.mutable.Map[String, SparseVector[Double]]()
     topicThetas ++= featureBuilder.labelCounts.keys.map(x =>
-      x -> SparseVector.fill(dim)(2 * rand.nextDouble - 1))
+      x -> SparseVector.zeros[Double](dim) )
 
-    val sw = new StopWatch; sw.start
+    //pick random train data
+    val randomData = Random.shuffle(featureBuilder.trainDocLabels.keySet.toList).take(NUMBER_OF_ITERATIONS)
 
     for (theta <- topicThetas) {
       val topic = theta._1
-      val samples = 10000;
       var step: Int = 1
 
-      breakable {
-        for (featureKey <- featureBuilder.trainDocLabels.keySet) {
-          val _t = topicThetas(theta._1)
+      for (featureKey <- randomData) {
+        val _t = topicThetas(theta._1)
 
-          val topics = featureBuilder.trainDocLabels(featureKey)
-          val y = topics.find(x => x == topic) match {
-            case Some(_) => true
-            case None    => false
-          }
-
-          val feature = featureBuilder.features(featureKey)
-          val lambda: Double = 1.0
-          val t = update(_t, feature, y)
-          topicThetas(theta._1) = t;
-          step += 1
-          if (step == samples) break
-
+        val topics = featureBuilder.trainDocLabels(featureKey)
+        val y = topics.find(x => x == topic) match {
+          case Some(_) => true
+          case None    => false
         }
-      }
 
-      println("topic = " + theta._1 + " time = " + sw.uptonow)
+        val feature = featureBuilder.features(featureKey)
+        val lambda: Double = 1.0
+        val t = update(_t, feature, y)
+        topicThetas(theta._1) = t;
+        step += 1
+
+      }
 
     }
 
@@ -102,7 +99,7 @@ object LogisticRegressionClassification {
 
   def main(args: Array[String]) = {
 
-    val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train-small/";
+    val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train/";
     val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels/";
 
     val c = new LogisticRegressionClassification(trainDataPath, testDataLabeledPath, true)

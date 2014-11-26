@@ -26,10 +26,14 @@ For instance:
 
 -trainData C:/IR/trainData/ -testData C:/IR/test-with-labels/ -labeled true -type SVM
 
+It's important to set following VM Arguments:
+
+-Xss400m -Xms2g -Xmx4g -XX:-UseGCOverheadLimit
+
 # General Classification Information
 
 All 3 classification techniques are one-vs-all approach.
-All 3 classification techniques are using StopWords (assignment2.StopWords.scala) and Stemming (com.github.aztek.porterstemmer.PortStemmer.scala)
+All 3 classification are using StopWords (assignment2.StopWords.scala) and Stemming (com.github.aztek.porterstemmer.PortStemmer.scala)
 
 # Naive Bayse
 
@@ -42,11 +46,12 @@ F1 Avg = 0.18959501932990883
 Class assignment2.regression.LogisticRegressionClassification
 
 P= 0.1592772146319149 , R= 0.27407038396564426 , F1= 0.19102499514718105
+P= 0.13322248487513225 , R= 0.18784543859165262 , F1= 0.1502050493620021
 
 # SVM - Support Vector Machines
 
 Class assignment2.svm.SvmClassification
 
-F1 Avg = 0.3002290216193687
+P= NaN , R= 0.41359754506214796 , F1= 0.3096332806014363
 
 
