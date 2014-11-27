@@ -49,17 +49,17 @@ class NaiveBayseClassification(trainDataPath: String, testDataLabeledPath: Strin
       val labelLength = idx.trainLabelLength(topic)
 
       topic -> (math.log(p(topic)) + tf.par.map(word =>
-        word._2.size.toDouble * math.log(pwc(word._1, topic, tokens.size, topicTf, labelLength))).sum.toDouble)
+        word._2.size.toDouble * math.log(pwc(word._1, topic, topicTf, labelLength))).sum.toDouble)
     }
     x.toList
   }
 
-  private def pwc(word: String, topic: String, numberOfWords: Int, topicTf: scala.collection.mutable.Map[String, Int], labelLength: Int): Double = {
+  private def pwc(word: String, topic: String, topicTf: scala.collection.mutable.Map[String, Int], labelLength: Int): Double = {
     //la place smoothing
     val alpha = 1.0
     val tf: Int = topicTf.getOrElse(word, 0)
-
-    (tf.toDouble + alpha) / (labelLength.toDouble + alpha * numberOfWords.toDouble)
+    val r = (tf.toDouble + alpha) / (labelLength.toDouble + alpha * idx.words.size.toDouble)
+    r
   }
 
   def p(c: String): Double = {
@@ -71,7 +71,7 @@ class NaiveBayseClassification(trainDataPath: String, testDataLabeledPath: Strin
    *
    */
   private def sortByProbability(r: List[(String, Double)]): Seq[String] = {
-    r.sortBy(_._2).reverse.map(f => f._1).toSeq.take(5)
+    r.sortBy(_._2).reverse.map(f => f._1).toSeq.take(3)
   }
 
 }
@@ -80,8 +80,8 @@ object NaiveBayseClassification {
 
   def main(args: Array[String]) = {
 
-    val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train-small/";
-    val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels-small/";
+    val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train/";
+    val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels/";
 
     val c = new NaiveBayseClassification(trainDataPath, testDataLabeledPath, true)
 

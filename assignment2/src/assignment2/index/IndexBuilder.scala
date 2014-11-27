@@ -15,15 +15,17 @@ class IndexBuilder(data: ReutersCorpusIterator) {
     var documentCounts = 0.0;
     val trainLabelLength = scala.collection.mutable.Map[String, Int]()
     val index2 = scala.collection.mutable.Map[String, scala.collection.mutable.Map[String, Int]]()
+    var words = Set[String]()
 
     val sw = new StopWatch; sw.start
 
     while (data.hasNext) {
       val doc = data.next
       documentCounts += 1
-
       val tfMap = doc.tokens.groupBy(identity);
       val tf = tfMap.mapValues(l => l.length)
+      words ++= tf.keySet
+      
       topicCounts ++= doc.topics.map(c => (c -> (1 + topicCounts.getOrElse(c, 0))))
 
       trainLabelLength ++= doc.topics.map(c => (c -> (doc.tokens.size + trainLabelLength.getOrElse(c, 0))))
@@ -35,7 +37,6 @@ class IndexBuilder(data: ReutersCorpusIterator) {
         var temp: scala.collection.mutable.Map[String, Int] = index2.getOrElse(c._1, scala.collection.mutable.Map[String, Int]())
         temp ++= c._2.map(x => x._1 -> (x._2 + temp.getOrElse(x._1, 0)))
         index2(c._1) = temp
-
       }
 
       if (documentCounts % 10000 == 0) {
@@ -50,7 +51,7 @@ class IndexBuilder(data: ReutersCorpusIterator) {
 
     println(documentCounts + " docs in corpus")
     
-    (topicCounts, documentCounts, trainLabelLength, index2)
+    (topicCounts, documentCounts, trainLabelLength, index2, words)
   }
 
   val topicCounts: scala.collection.mutable.Map[String, Int] = idx._1;
@@ -60,6 +61,8 @@ class IndexBuilder(data: ReutersCorpusIterator) {
   val trainLabelLength = idx._3;
 
   val index2 = idx._4
+  
+  val words = idx._5
 
 }
 

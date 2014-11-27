@@ -39,7 +39,9 @@ All 3 classification are using StopWords (assignment2.StopWords.scala) and Stemm
 
 Class assignment2.naivebayse.NaiveBayseClassification
 
-F1 Avg = 0.18959501932990883
+Output 3 Topics
+
+P= 0.7194131709337228 , R= 0.7333289634183215 , F1= 0.7020213093418058
 
 # Logistic Regression
 
