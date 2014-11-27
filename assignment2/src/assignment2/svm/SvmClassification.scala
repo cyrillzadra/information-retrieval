@@ -53,9 +53,12 @@ class SvmClassification(trainDataPath: String, testDataLabeledPath: String, labe
         topicThetas(theta._1) = t;
         step += 1
 
-      }
+      }   
+          println ( sw.uptonow + " s ")
 
     }
+    
+    println ("Finished learning " + sw.uptonow + " s ")
 
     val resultScore = scala.collection.mutable.Map[String, PrecisionRecallF1[String]]()
 
@@ -78,7 +81,7 @@ class SvmClassification(trainDataPath: String, testDataLabeledPath: String, labe
   }
 
   def priority(score: List[(String, Double, Double)]): Seq[String] = {
-    score.filter(p => p._2 < p._3).sortBy(_._3).map(s => s._1).toSeq.take(5)
+    score.sortBy(_._3).map(s => s._1).toSeq.take(3)
   }
 
   /**
@@ -111,7 +114,7 @@ object SvmClassification {
     val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train/";
     val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels/";
 
-    val c = new SvmClassification(trainDataPath, testDataLabeledPath, true)
+    val c = new SvmClassification(trainDataPath, testDataLabeledPath, false)
 
     c.process()
   }

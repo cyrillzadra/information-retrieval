@@ -31,7 +31,7 @@ class LogisticRegressionClassification(trainDataPath: String, testDataLabeledPat
     val rand = new Random()
     var topicThetas = scala.collection.mutable.Map[String, SparseVector[Double]]()
     topicThetas ++= featureBuilder.labelCounts.keys.map(x =>
-      x -> SparseVector.zeros[Double](dim) )
+      x -> SparseVector.zeros[Double](dim))
 
     //pick random train data
     val randomData = Random.shuffle(featureBuilder.trainDocLabels.keySet.toList).take(NUMBER_OF_ITERATIONS)
@@ -56,8 +56,9 @@ class LogisticRegressionClassification(trainDataPath: String, testDataLabeledPat
         step += 1
 
       }
-
+      println(sw.uptonow + " s ")
     }
+    println(sw.uptonow + " s ")
 
     var resultScore = scala.collection.mutable.Map[String, PrecisionRecallF1[String]]()
     for (doc <- featureBuilder.testDocLabels) {
