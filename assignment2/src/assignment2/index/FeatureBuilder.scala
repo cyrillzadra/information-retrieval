@@ -70,7 +70,7 @@ class FeatureBuilder(train: ReutersCorpusIterator, test: ReutersCorpusIterator) 
     val wordIndex = words.zipWithIndex.toMap
 
     //build feature vector
-    val features = scala.collection.mutable.Map[String, SparseVector[Double]]()
+    var features = scala.collection.mutable.Map[String, SparseVector[Double]]()
     for (d <- docs) {
       val v = SparseVector.zeros[Double](dim)
       d._2.map(word => v(wordIndex(word._1)) = word._2)

@@ -84,8 +84,8 @@ object IndexBuilder {
 
     println("nrOfDocuments =            " + f1.nrOfDocuments)
     println("topicCounts =              " + f1.topicCounts)
-    println("trainTopicLength =           " + f1.trainTopicLength)
-    println("topicTfIndex =                    " + f1.topicTfIndex)
+    println("trainTopicLength =         " + f1.trainTopicLength)
+    println("topicTfIndex =             " + f1.topicTfIndex)
 
   }
 

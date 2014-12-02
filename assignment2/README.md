@@ -36,11 +36,19 @@ All 3 classification techniques are one-vs-all approach.
 
 All 3 classification are using StopWords (assignment2.StopWords.scala) and Stemming (com.github.aztek.porterstemmer.PortStemmer.scala)
 
+For all 3 classification top 3 topics are returned. 
+
 # Naive Bayse
 
 Class assignment2.naivebayse.NaiveBayseClassification
 
-Output 3 Topics
+In a first pass a assignment2.index.IndexBuilder collects all relevant information from train data, such as nr of documents, topic counts, topic length (total number of tokens for each topic) and topicTfIndex ( collection frequency for each topic ), and puts it in Memory.
+
+In a second pass NaiveBayseClassification goes over test data 
+
+naive bayse
+
+Best result using Naive Bayse:
 
 P= 0.7194131709337228 , R= 0.7333289634183215 , F1= 0.7020213093418058
 
@@ -48,12 +56,22 @@ P= 0.7194131709337228 , R= 0.7333289634183215 , F1= 0.7020213093418058
 
 Class assignment2.regression.LogisticRegressionClassification
 
-P= 0.1592772146319149 , R= 0.27407038396564426 , F1= 0.19102499514718105
+Best result using Logistic Regression:
+
 P= 0.13322248487513225 , R= 0.18784543859165262 , F1= 0.1502050493620021
 
 # SVM - Support Vector Machines
 
 Class assignment2.svm.SvmClassification
+
+Best result using SVM:
+
+In a first pass SvmClassification uses assignment2.index.FeatureBuilder to collect seperately all features (term frequencies) from train and test data. 
+
+
+
+
+
 
 P= 0.5904149471800447 , R= 0.601059109400312 , F1= 0.5744665782352627
 
