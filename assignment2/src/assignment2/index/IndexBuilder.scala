@@ -3,11 +3,7 @@ package assignment2.index
 import ch.ethz.dal.classifier.processing.ReutersCorpusIterator
 import ch.ethz.dal.tinyir.util.StopWatch
 
-case class Postings(val word: String, val tf: Int)
-
 class IndexBuilder(data: ReutersCorpusIterator) {
-
-  val NUMBER_OF_DOCUMENTS = 10000;
 
   val idx = {
     println("Start building index")
@@ -41,11 +37,9 @@ class IndexBuilder(data: ReutersCorpusIterator) {
         topicTfIndex(c._1) = temp
       }
 
-      if (documentCounts % 10000 == 0) {
-        println(topicTfIndex.size)
-        println(documentCounts.toDouble / NUMBER_OF_DOCUMENTS * 100 + " % " + " time = " + sw.uptonow)
+      if (documentCounts % 30000 == 0) {
+        println("items = " + documentCounts + " time = " + sw.uptonow + " sec")
       }
-
     }
 
     sw.stop
@@ -56,14 +50,23 @@ class IndexBuilder(data: ReutersCorpusIterator) {
     (topicCounts, documentCounts, trainLabelLength, topicTfIndex, words)
   }
 
+  /**
+   * Map[topic, number of Topics]
+   */
   val topicCounts: scala.collection.mutable.Map[String, Int] = idx._1;
 
   val nrOfDocuments: Double = idx._2;
 
-  val trainLabelLength = idx._3;
+  /**
+   * topal number of tokens per topic
+   */
+  val trainTopicLength = idx._3;
 
   val topicTfIndex = idx._4
-  
+
+  /**
+   * Set containing all words
+   */
   val words = idx._5
 
 }
@@ -81,8 +84,8 @@ object IndexBuilder {
 
     println("nrOfDocuments =            " + f1.nrOfDocuments)
     println("topicCounts =              " + f1.topicCounts)
-    println("trainLabelLength =           " + f1.trainLabelLength)
-    println("index2 =                    " + f1.topicTfIndex)
+    println("trainTopicLength =           " + f1.trainTopicLength)
+    println("topicTfIndex =                    " + f1.topicTfIndex)
 
   }
 

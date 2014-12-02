@@ -11,7 +11,7 @@ class NaiveBayseClassification(trainDataPath: String, testDataLabeledPath: Strin
   extends Classification {
 
   val trainDataIter: ReutersCorpusIterator = new ReutersCorpusIterator(trainDataPath)
-  val testDataLabeledIter: ReutersCorpusIterator = new ReutersCorpusIterator(testDataLabeledPath)
+  val testDataIter: ReutersCorpusIterator = new ReutersCorpusIterator(testDataLabeledPath)
 
   val idx: IndexBuilder = new IndexBuilder(trainDataIter)
 
@@ -21,9 +21,9 @@ class NaiveBayseClassification(trainDataPath: String, testDataLabeledPath: Strin
 
     val resultScore = scala.collection.mutable.Map[String, PrecisionRecallF1[String]]()
     var progress: Int = 0
-    while (testDataLabeledIter.hasNext) {
+    while (testDataIter.hasNext) {
       progress += 1;
-      val doc = testDataLabeledIter.next
+      val doc = testDataIter.next
 
       val result = naiveBayse(doc.tokens, idx.topicCounts.keySet.toList);
       val sortedResult = sortByProbability(result)
@@ -46,10 +46,10 @@ class NaiveBayseClassification(trainDataPath: String, testDataLabeledPath: Strin
     val tf = tokens.groupBy(identity);
     val x = topics.par.map { topic =>
       val topicTf: scala.collection.mutable.Map[String, Int] = idx.topicTfIndex(topic)
-      val labelLength = idx.trainLabelLength(topic)
+      val topicLength = idx.trainTopicLength(topic)
 
       topic -> (math.log(p(topic)) + tf.par.map(word =>
-        word._2.size.toDouble * math.log(pwc(word._1, topic, topicTf, labelLength))).sum.toDouble)
+        word._2.size.toDouble * math.log(pwc(word._1, topic, topicTf, topicLength))).sum.toDouble)
     }
     x.toList
   }
@@ -68,7 +68,7 @@ class NaiveBayseClassification(trainDataPath: String, testDataLabeledPath: Strin
   }
 
   /**
-   *
+   * Sorting and then returning only top 3
    */
   private def sortByProbability(r: List[(String, Double)]): Seq[String] = {
     r.sortBy(_._2).reverse.map(f => f._1).toSeq.take(3)
@@ -81,9 +81,9 @@ object NaiveBayseClassification {
   def main(args: Array[String]) = {
 
     val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train/";
-    val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels/";
+    val testDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels/";
 
-    val c = new NaiveBayseClassification(trainDataPath, testDataLabeledPath, true)
+    val c = new NaiveBayseClassification(trainDataPath, testDataPath, true)
 
     c.process()
   }
