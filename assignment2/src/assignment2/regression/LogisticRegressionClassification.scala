@@ -50,8 +50,14 @@ class LogisticRegressionClassification(trainDataPath: String, testDataLabeledPat
         }
 
         val feature = featureBuilder.features(featureKey)
-        val lambda: Double = 1.0
-        val t = update(_t, feature, y)
+
+        val numDocs : Double = featureBuilder.trainDocLabels.size;
+        val positiv : Double = featureBuilder.trainLabelDocs(topic).size
+        val nevativ : Double = numDocs - positiv
+
+        val alpha: Double = if (y) (nevativ/ numDocs) else (positiv / numDocs)
+
+        val t = update(_t, feature, y, alpha)
         topicThetas(theta._1) = t;
         step += 1
 
@@ -80,16 +86,23 @@ class LogisticRegressionClassification(trainDataPath: String, testDataLabeledPat
   }
 
   def priority(score: List[(String, Double)]): Seq[String] = {
-    score.sortBy(_._2).reverse.map(s => s._1).toSeq.take(5)
+    score.sortBy(_._2).reverse.map(s => s._1).toSeq.take(3)
   }
 
   def logistic(x: SparseVector[Double], y: SparseVector[Double]): Double = {
     val r = 1.0 / (1.0 + Math.exp(-x.dot(y)))
     r
   }
+  
+  //TODO remove
+//  def logistic2(x: SparseVector[Double], y: SparseVector[Double]): Double = {
+//    val r = math.log( 1 + math.exp(x.dot(y)) )
+//    println(r)
+//    r
+//  }
 
-  def update(th: SparseVector[Double], x: SparseVector[Double], c: Boolean) = {
-    val z = if (c) (1 - logistic(th, x)) else (-logistic(th, x))
+  def update(th: SparseVector[Double], x: SparseVector[Double], c: Boolean, alpha: Double) = {
+    val z = if (c) alpha * (1 - logistic(th, x)) else -alpha * (-logistic(th, x))
     val r = x * z
     r
   }
@@ -101,9 +114,9 @@ object LogisticRegressionClassification {
   def main(args: Array[String]) = {
 
     val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train/";
-    val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels/";
+    val testDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-without-labels/test-without-labels/";
 
-    val c = new LogisticRegressionClassification(trainDataPath, testDataLabeledPath, true)
+    val c = new LogisticRegressionClassification(trainDataPath, testDataPath, false)
 
     c.process()
   }

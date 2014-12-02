@@ -13,7 +13,7 @@ Please write your code such that :
 • Your complete source code (the complete src folder). For the correct submission format, please refer to the slides. Each of you has to individually hand in a submission by Nov. 26nd, 23:59:59.
 
 
-# Main pogram
+# Main program
 
 assignment2.Main requires following arguments:
 
@@ -58,7 +58,7 @@ Class assignment2.regression.LogisticRegressionClassification
 
 Best result using Logistic Regression:
 
-P= 0.13322248487513225 , R= 0.18784543859165262 , F1= 0.1502050493620021
+P= 0.22266917745103393 , R= 0.3768042188256521 , F1= 0.2683379337145363
 
 # SVM - Support Vector Machines
 
