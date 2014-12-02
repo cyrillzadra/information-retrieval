@@ -80,6 +80,10 @@ class SvmClassification(trainDataPath: String, testDataLabeledPath: String, labe
 
   }
 
+  
+  /**
+   * 
+   */
   def priority(score: List[(String, Double, Double)]): Seq[String] = {
     score.sortBy(_._3).map(s => s._1).toSeq.take(3)
   }
