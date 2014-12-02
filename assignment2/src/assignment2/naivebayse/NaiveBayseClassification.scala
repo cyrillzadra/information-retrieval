@@ -45,7 +45,7 @@ class NaiveBayseClassification(trainDataPath: String, testDataLabeledPath: Strin
   private def naiveBayse(tokens: List[String], topics: List[String]): List[(String, Double)] = {
     val tf = tokens.groupBy(identity);
     val x = topics.par.map { topic =>
-      val topicTf: scala.collection.mutable.Map[String, Int] = idx.index2(topic)
+      val topicTf: scala.collection.mutable.Map[String, Int] = idx.topicTfIndex(topic)
       val labelLength = idx.trainLabelLength(topic)
 
       topic -> (math.log(p(topic)) + tf.par.map(word =>
