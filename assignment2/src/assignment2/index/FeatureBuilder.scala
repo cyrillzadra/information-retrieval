@@ -55,13 +55,9 @@ class FeatureBuilder(train: ReutersCorpusIterator, test: ReutersCorpusIterator) 
     sw.stop
 
     println("train docs size = " + docs.size + " ::: ")
-    //println(docs.take(10))
     println("train words size = " + words.size + " ::: ")
-    //println(words.take(10))
     println("train trainDocLabels size = " + trainDocLabels.size)
-    //println(trainDocLabels.take(10))
     println("train trainLabelDocs size = " + trainLabelDocs.size)
-    //println(trainLabelDocs.take(10))
 
     val dim = words.size
     val dim_y = docs.size

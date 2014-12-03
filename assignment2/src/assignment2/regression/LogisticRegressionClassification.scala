@@ -107,13 +107,13 @@ class LogisticRegressionClassification(trainDataPath: String, testDataLabeledPat
 }
 
 object LogisticRegressionClassification {
-
+  
   def main(args: Array[String]) = {
 
     val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train/";
-    val testDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels/";
+    val testDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-without-labels/test-without-labels/";
 
-    val c = new LogisticRegressionClassification(trainDataPath, testDataPath, true)
+    val c = new LogisticRegressionClassification(trainDataPath, testDataPath, false)
 
     c.process()
   }
