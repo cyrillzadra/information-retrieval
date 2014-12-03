@@ -25,7 +25,7 @@ class LogisticRegressionClassification(trainDataPath: String, testDataLabeledPat
     val dim: Int = featureBuilder.dim;
     val NUMBER_OF_ITERATIONS = 10000;
 
-    println("Start learning")
+    println("Start learning step")
     val sw = new StopWatch; sw.start
 
     val rand = new Random()
@@ -64,8 +64,10 @@ class LogisticRegressionClassification(trainDataPath: String, testDataLabeledPat
       }
       println(sw.uptonow + " s ")
     }
-    println(sw.uptonow + " s ")
-
+    
+    println ("Finished learning " + sw.uptonow + " s ")
+    println("Start classification step")
+    
     var resultScore = scala.collection.mutable.Map[String, PrecisionRecallF1[String]]()
     for (doc <- featureBuilder.testDocLabels) {
       val feature = featureBuilder.features(doc._1)
@@ -78,6 +80,7 @@ class LogisticRegressionClassification(trainDataPath: String, testDataLabeledPat
 
       val sortedResult = priority(scores.toList);
       resultScore += doc._1 -> new PrecisionRecallF1(sortedResult, doc._2.toSet)
+      
     }
 
     new ResultWriter(resultScore.toMap, "lr", labeled).write()
@@ -86,7 +89,8 @@ class LogisticRegressionClassification(trainDataPath: String, testDataLabeledPat
   }
 
   def priority(score: List[(String, Double)]): Seq[String] = {
-    score.sortBy(_._2).reverse.map(s => s._1).toSeq.take(3)
+    val threshold = 0.6;
+    score.filter(s => s._2 > threshold).sortBy(_._2).reverse.map(s => s._1).toSeq
   }
 
   def logistic(x: SparseVector[Double], y: SparseVector[Double]): Double = {
@@ -106,10 +110,10 @@ object LogisticRegressionClassification {
 
   def main(args: Array[String]) = {
 
-    val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train/";
-    val testDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-without-labels/test-without-labels/";
+    val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train-small/";
+    val testDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels-small/";
 
-    val c = new LogisticRegressionClassification(trainDataPath, testDataPath, false)
+    val c = new LogisticRegressionClassification(trainDataPath, testDataPath, true)
 
     c.process()
   }
