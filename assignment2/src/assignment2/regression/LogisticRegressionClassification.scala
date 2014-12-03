@@ -51,9 +51,9 @@ class LogisticRegressionClassification(trainDataPath: String, testDataLabeledPat
 
         val numDocs : Double = featureBuilder.trainDocLabels.size;
         val positiv : Double = featureBuilder.trainLabelDocs(topic).size
-        val nevativ : Double = numDocs - positiv
+        val negativ : Double = numDocs - positiv
 
-        val alpha: Double = if (y) (nevativ/ numDocs) else (positiv / numDocs)
+        val alpha: Double = if (y) (negativ/ numDocs) else (positiv / numDocs)
 
         val t = update(_t, feature, y, alpha)
         topicThetas(theta._1) = t;
