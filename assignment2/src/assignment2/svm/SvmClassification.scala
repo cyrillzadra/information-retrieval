@@ -1,8 +1,8 @@
 package assignment2.svm
 
 import scala.annotation.migration
-import scala.util.control.Breaks.break
-import scala.util.control.Breaks.breakable
+import scala.util.Random
+
 import assignment2.Classification
 import assignment2.index.FeatureBuilder
 import assignment2.io.ResultWriter
@@ -10,7 +10,6 @@ import assignment2.score.PrecisionRecallF1
 import breeze.linalg.SparseVector
 import ch.ethz.dal.classifier.processing.ReutersCorpusIterator
 import ch.ethz.dal.tinyir.util.StopWatch
-import scala.util.Random
 
 case class DataPoint(x: SparseVector[Double], y: Double)
 

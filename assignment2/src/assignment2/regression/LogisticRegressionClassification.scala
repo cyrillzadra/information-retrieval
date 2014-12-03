@@ -2,8 +2,6 @@ package assignment2.regression
 
 import scala.annotation.migration
 import scala.util.Random
-import scala.util.control.Breaks.break
-import scala.util.control.Breaks.breakable
 
 import assignment2.Classification
 import assignment2.index.FeatureBuilder
