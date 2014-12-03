@@ -94,13 +94,6 @@ class LogisticRegressionClassification(trainDataPath: String, testDataLabeledPat
     r
   }
   
-  //TODO remove
-//  def logistic2(x: SparseVector[Double], y: SparseVector[Double]): Double = {
-//    val r = math.log( 1 + math.exp(x.dot(y)) )
-//    println(r)
-//    r
-//  }
-
   def update(th: SparseVector[Double], x: SparseVector[Double], c: Boolean, alpha: Double) = {
     val z = if (c) alpha * (1 - logistic(th, x)) else -alpha * (-logistic(th, x))
     val r = x * z

@@ -81,9 +81,9 @@ object NaiveBayseClassification {
   def main(args: Array[String]) = {
 
     val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train/";
-    val testDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels/";
+    val testDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-without-labels/test-without-labels/";
 
-    val c = new NaiveBayseClassification(trainDataPath, testDataPath, true)
+    val c = new NaiveBayseClassification(trainDataPath, testDataPath, false)
 
     c.process()
   }
