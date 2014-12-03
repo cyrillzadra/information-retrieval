@@ -8,10 +8,10 @@ import assignment2.score.PrecisionRecallF1
 /**
  * Writes result to a given file.
  */
-class ResultWriter(result: Map[String, PrecisionRecallF1[String]], classType : String, labeled: Boolean = true) {
+class ResultWriter(result: Map[String, PrecisionRecallF1[String]], classType: String, labeled: Boolean = true) {
 
   val fileName = "classify-cyrill-zadra"
-  
+
   val l: String = if (labeled) "l" else "u"
 
   /**
@@ -19,7 +19,7 @@ class ResultWriter(result: Map[String, PrecisionRecallF1[String]], classType : S
    *
    * classify-[firstname]-[lastname]-[l|u]-[nb|lr|svm].run
    */
-  val writer = new PrintWriter(new File(fileName + "-" + l + "-" + classType +".run"))
+  val writer = new PrintWriter(new File(fileName + "-" + l + "-" + classType + ".run"))
 
   /**
    * output for labeled data:
@@ -37,14 +37,16 @@ class ResultWriter(result: Map[String, PrecisionRecallF1[String]], classType : S
     var totalP = 0.0;
     var totalR = 0.0;
     result.foreach { f =>
-      if (labeled) {
-        if (!f._2.prF1.f1.isNaN) totalF1 += f._2.prF1.f1
-        if (!f._2.prF1.recall.isNaN) totalR += f._2.prF1.recall
-        if (!f._2.prF1.precision.isNaN) totalP += f._2.prF1.precision
-        
+      if (labeled && !f._2.prF1.f1.isNaN) {
+        totalF1 += f._2.prF1.f1
+        totalR += f._2.prF1.recall
+        totalP += f._2.prF1.precision
+
         writer.write("%s %s %s \n".format(f._2.prF1.precision, f._2.prF1.recall, f._2.prF1.f1))
       }
-      writer.write("%s %s \n".format(f._1, f._2.ranked.mkString(" ")))
+      if (!labeled || !f._2.prF1.f1.isNaN) {
+        writer.write("%s %s \n".format(f._1, f._2.ranked.mkString(" ")))
+      }
     }
 
     if (labeled) {

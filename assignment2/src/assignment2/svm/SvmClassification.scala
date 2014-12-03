@@ -54,9 +54,9 @@ class SvmClassification(trainDataPath: String, testDataLabeledPath: String, labe
         step += 1
 
       }   
-          println ( sw.uptonow + " s ")
+      println ( sw.uptonow + " s ")
 
-    }
+    }  
     
     println ("Finished learning " + sw.uptonow + " s ")
 
@@ -64,10 +64,10 @@ class SvmClassification(trainDataPath: String, testDataLabeledPath: String, labe
 
     for (doc <- featureBuilder.testDocLabels) {
       val feature = featureBuilder.features(doc._1)
-      var scores = scala.collection.mutable.MutableList[(String, Double, Double)]()
+      var scores = scala.collection.mutable.MutableList[(String, Double)]()
 
       for (theta <- topicThetas) {
-        scores ++= List(hingeLoss(theta._1, feature, theta._2))
+        scores ++= List(classification(theta._1, feature, theta._2))
       }
 
       val sortedResult = priority(scores.toList);
@@ -77,23 +77,16 @@ class SvmClassification(trainDataPath: String, testDataLabeledPath: String, labe
     new ResultWriter(resultScore.toMap, "svm", labeled).write()
 
     println("FINISHED")
-
   }
 
   
-  /**
-   * 
-   */
-  def priority(score: List[(String, Double, Double)]): Seq[String] = {
-    score.sortBy(_._3).map(s => s._1).toSeq.take(3)
+  def priority(score: List[(String, Double)]): Seq[String] = {
+    score.filter(s => s._2 >= 0).sortBy(_._2).reverse.map(s => s._1).toSeq
   }
 
-  /**
-   * Hinge loss l(ThetaVector;(~xVector; y)) = max{0,1 - y<ThetaVector,xVector> }
-   */
-  def hingeLoss(topic: String, f: SparseVector[Double], theta: SparseVector[Double]): (String, Double, Double) = {
+  def classification(topic: String, f: SparseVector[Double], theta: SparseVector[Double]): (String, Double) = {
     val p = theta.dot(f)
-    (topic, math.max(0.0, 1 - (-1 * p)), math.max(0.0, 1 - (1 * p)))
+    (topic, p)
   }
 
   def updateStep(theta: SparseVector[Double], p: DataPoint,
@@ -116,9 +109,9 @@ object SvmClassification {
   def main(args: Array[String]) = {
 
     val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train/";
-    val testDataLabeledPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-without-labels/test-without-labels/";
+    val testDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-without-labels/test-without-labels/";
 
-    val c = new SvmClassification(trainDataPath, testDataLabeledPath, false)
+    val c = new SvmClassification(trainDataPath, testDataPath, false)
 
     c.process()
   }
