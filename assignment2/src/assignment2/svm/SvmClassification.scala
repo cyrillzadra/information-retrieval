@@ -26,7 +26,7 @@ class SvmClassification(trainDataPath: String, testDataLabeledPath: String, labe
     val dim: Int = featureBuilder.dim;
     val NUMBER_OF_ITERATIONS = 10000;
 
-    println("Start learning")
+    println("Start learning step")
     val sw = new StopWatch; sw.start
     var topicThetas = scala.collection.mutable.Map[String, SparseVector[Double]]()
     topicThetas ++= featureBuilder.labelCounts.keys.map(x => x -> SparseVector.zeros[Double](dim))
@@ -59,6 +59,7 @@ class SvmClassification(trainDataPath: String, testDataLabeledPath: String, labe
     }  
     
     println ("Finished learning " + sw.uptonow + " s ")
+    println("Start classification step")
 
     val resultScore = scala.collection.mutable.Map[String, PrecisionRecallF1[String]]()
 

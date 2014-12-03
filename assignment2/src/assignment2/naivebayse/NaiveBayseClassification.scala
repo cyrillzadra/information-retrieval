@@ -27,8 +27,9 @@ class NaiveBayseClassification(trainDataPath: String, testDataLabeledPath: Strin
 
       val result = naiveBayse(doc.tokens, idx.topicCounts.keySet.toList);
       val sortedResult = sortByProbability(result)
-      resultScore += doc.name -> new PrecisionRecallF1(sortedResult, doc.topics)
 
+      resultScore += doc.name -> new PrecisionRecallF1(sortedResult, doc.topics)
+      
       if (progress % 2500 == 0) {
         println("progress = " + progress.toDouble / 50000 * 100 + " % " + " time = " + sw.uptonow)
       }
@@ -81,9 +82,9 @@ object NaiveBayseClassification {
   def main(args: Array[String]) = {
 
     val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train/";
-    val testDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-without-labels/test-without-labels/";
+    val testDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels/";
 
-    val c = new NaiveBayseClassification(trainDataPath, testDataPath, false)
+    val c = new NaiveBayseClassification(trainDataPath, testDataPath, true)
 
     c.process()
   }

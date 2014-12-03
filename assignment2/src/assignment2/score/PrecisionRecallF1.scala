@@ -5,11 +5,16 @@ import collection.Seq
 import util.Random
 import math.{ min, max }
 import assignment2.io.ResultWriter
+import assignment2.io.TopicEvaluationResultWriter
+import assignment2.io.ResultWriter
 
-class PrecisionRecallF1[A](_ranked: Seq[A], relev: Set[A]) {
+class PrecisionRecallF1[A](_ranked: Seq[A], _relev: Set[A]) {
 
   //precision recall f1 score
-  val prF1 = evaluate(_ranked, relev)
+  val prF1 = evaluate(_ranked, _relev)
+  
+  //relevance items
+  val relev = _relev;
 
   //ranked items
   val ranked = _ranked;
@@ -33,6 +38,10 @@ class PrecisionRecallF1[A](_ranked: Seq[A], relev: Set[A]) {
       recall = truePos.toDouble / relev.size.toDouble,
       f1 = evalF1(truePos.toDouble / ranked.size.toDouble, truePos.toDouble / relev.size.toDouble))
   }
+  
+  def evaluatePreRec(numOfTopics : Int) : PrecRec = {
+    evaluate(ranked.take(numOfTopics), relev)
+  } 
 
 }
 
@@ -52,9 +61,12 @@ object PrecisionRecallF1 {
       assert((prF1.recall == (1.0 / 4.0)))
       assert((math.round(prF1.f1 * 100) == math.round((2.0 / 7.0) * 100)))
 
-      val result = Map[String, PrecisionRecallF1[String]]("test" -> pr)
+      val result = scala.collection.mutable.Map[String, PrecisionRecallF1[String]]("test" -> pr)
+      
 
-      new ResultWriter(result,"TEST",true).write()
+      new ResultWriter(result.toMap,"TEST",true).write()
+      
+      new TopicEvaluationResultWriter(result).write()
     }
   }
 }

@@ -110,8 +110,8 @@ object LogisticRegressionClassification {
 
   def main(args: Array[String]) = {
 
-    val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train-small/";
-    val testDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels-small/";
+    val trainDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/training/train/";
+    val testDataPath = "C:/dev/projects/eth/information-retrieval/course-material/assignment2/test-with-labels/test-with-labels/";
 
     val c = new LogisticRegressionClassification(trainDataPath, testDataPath, true)
 
